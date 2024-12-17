@@ -1,0 +1,145 @@
+/* CreateTodoPage 스타일 */
+.create-todo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: 50px auto;
+}
+
+.create-todo-title {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.create-todo-date-section {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.create-todo-date-label {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.create-todo-date-picker {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+/* 날짜 선택 팝업 스타일 */
+.react-datepicker__portal {
+  z-index: 9999; /* 다른 요소 위에 표시되도록 설정 */
+}
+
+.react-datepicker__header {
+  background-color: #4CAF50;
+  color: white;
+  font-size: 16px;
+  border-radius: 4px 4px 0 0;
+  padding: 10px;
+}
+
+.react-datepicker__month {
+  padding: 10px;
+  background-color: white;
+  border-radius: 0 0 4px 4px;
+}
+
+.react-datepicker__day {
+  font-size: 14px;
+  color: #333;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.react-datepicker__day--hovered {
+  background-color: #ddd;
+}
+
+.react-datepicker__today-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.react-datepicker__today-button:hover {
+  background-color: #45a049;
+}
+
+.create-todo-date-display {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.create-todo-input-section {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.create-todo-input {
+  padding: 12px;
+  font-size: 16px;
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.create-todo-button {
+  padding: 12px 20px;
+  color: white;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-todo-button:hover {
+  background-color: #45a049;
+}
+
+.create-todo-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+input[type="text"],
+textarea {
+  padding: 12px;
+  font-size: 16px;
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+textarea {
+  height: 100px;
+  resize: vertical;
+}
