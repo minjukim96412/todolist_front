@@ -27,6 +27,16 @@ const CalendarComponent = () => {
     }
   }, [user, navigate]);
 
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  };
+
   // 전체 일정 가져오기 및 필터링
   const fetchAllTodos = useCallback(async () => {
     setLoading(true);
@@ -141,7 +151,7 @@ const CalendarComponent = () => {
         );
       });
   
-      return hasTodo ? <span className="todo-icon">📅</span> : null;
+      return hasTodo ? <span className="todo-icon">💕</span> : null;
     }
     return null;
   };
@@ -177,9 +187,11 @@ const CalendarComponent = () => {
   return (
     <div className="calendar-container">
       <header>
-        <h2>To-Do List</h2>
-        <p>{user.nickname}</p>
-        <button onClick={handleLogout}>Logout</button>
+        <h2>TODO LIST</h2>
+        <p>
+          <span className="nickname">{user.nickname}</span> 님 환영합니다!
+        </p>
+        <button className='logoutBtn' onClick={handleLogout}>LOGOUT</button>
       </header>
 
       <div className="calendar-wrapper">
@@ -246,13 +258,15 @@ const CalendarComponent = () => {
         </div>
       </div>
 
+      
+
       {showModal && selectedTodo && (
         <div className="modal">
           <div className="modal-content">
             <h3>{selectedTodo.title}</h3>
-            <p><strong>시작일:</strong> {new Date(selectedTodo.startDate).toLocaleDateString()}</p>
-            <p><strong>종료일:</strong> {new Date(selectedTodo.endDate).toLocaleDateString()}</p>
-            <p><strong>내용:</strong> {selectedTodo.description}</p>
+            <p><strong>시작일:</strong> {formatDate(selectedTodo.startDate)}</p>
+            <p><strong>종료일:</strong> {formatDate(selectedTodo.endDate)}</p>
+            <p><strong>내용:</strong> {selectedTodo.content}</p>
             <button onClick={handleEdit}>수정하기</button>
             <button onClick={handleDelete}>삭제하기</button>
             <button onClick={closeModal}>닫기</button>

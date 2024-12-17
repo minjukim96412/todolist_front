@@ -11,10 +11,12 @@ const CreateTodoPage = () => {
   const [todoContent, setTodoContent] = useState('');
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
 
   const handleSubmit = async () => {
     try {
       const response = await axios.post('http://localhost:8888/api/todos', { 
+        memId: user.memId,
         title: todoTitle,
         content: todoContent,
         startDate: startDate,
@@ -53,28 +55,34 @@ const CreateTodoPage = () => {
       </div>
 
       <div>
-        <p>시작 날짜:</p>
+        <p>시작 날짜 및 시간:</p>
         <DatePicker
           selected={startDate}
           onChange={(date) => setStartDate(date)}
-          dateFormat="yyyy-MM-dd"
+          dateFormat="yyyy-MM-dd HH:mm"
+          showTimeSelect
+          timeFormat="HH:mm"
+          timeIntervals={30} // 30분 단위로 선택
           className="date-picker"
         />
       </div>
       
       <div>
-        <p>종료 날짜:</p>
+        <p>종료 날짜 및 시간:</p>
         <DatePicker
           selected={endDate}
           onChange={(date) => setEndDate(date)}
-          dateFormat="yyyy-MM-dd"
+          dateFormat="yyyy-MM-dd HH:mm"
+          showTimeSelect
+          timeFormat="HH:mm"
+          timeIntervals={30} // 30분 단위로 선택
           minDate={startDate}
           className="date-picker"
         />
       </div>
 
       <div>
-        <p>날짜: {startDate.toLocaleDateString()} ~ {endDate.toLocaleDateString()}</p>
+        <p>날짜: {startDate.toLocaleString()} ~ {endDate.toLocaleString()}</p>
       </div>
 
       <button onClick={handleSubmit}>일정 추가</button>
