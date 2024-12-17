@@ -83,6 +83,9 @@
     color: #333;
   }
 
+  .react-calendar__tile{
+    height: 65px;
+  }
 
   .react-calendar__tile.react-calendar__tile--now.react-calendar__tile--active.react-calendar__tile--range.react-calendar__tile--rangeStart.react-calendar__tile--rangeEnd.react-calendar__tile--rangeBothEnds.react-calendar__month-view__days__day{
     background-color: hotpink;
@@ -281,4 +284,40 @@
   .popup button {
     margin: 5px;
   }
-  
+  /* Modal 스타일 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+/* 선 스타일 */
+.start-end-todo {
+  position: relative;
+}
+
+.start-end-todo::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: red; /* 선 색상 */
+  z-index: -1;  /* 선이 날짜 위로 가도록 설정 */
+}
