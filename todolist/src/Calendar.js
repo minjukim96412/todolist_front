@@ -92,6 +92,29 @@ const CalendarComponent = () => {
     setSelectedDate(isoDate);
   };
 
+  // 완료 처리
+  const handleMarkAsComplete = async () => {
+    if (!selectedTodo) return;
+    
+    try {
+      const updatedCompleteYn = selectedTodo.completeYn === true ? false : true;  // 상태를 반전시킴
+      
+      await axios.patch(`${API_BASE_URL}/todos/${selectedTodo.todoId}`, {
+        completeYn: updatedCompleteYn
+      });
+      
+      // 완료 상태 업데이트 후 상태 반영
+      setAllTodos(allTodos.map(todo => 
+        todo.todoId === selectedTodo.todoId ? { ...todo, completeYn: updatedCompleteYn } : todo
+      ));
+      
+      closeModal();  // 모달 닫기
+    } catch (error) {
+      alert('상태 변경에 실패했습니다.');
+    }
+  };
+  
+
   // 페이지 로드 시 일정 가져오기
   useEffect(() => {
     fetchAllTodos();
@@ -123,7 +146,7 @@ const CalendarComponent = () => {
 
   // 일정 수정
   const handleEdit = () => {
-    navigate('/edit-todo', { state: { todo: selectedTodo } });
+    navigate('/edit-todo', { state: { todoId: selectedTodo.todoId } }); // todoId 전달
     closeModal();
   };
 
@@ -155,7 +178,7 @@ const CalendarComponent = () => {
     }
     return null;
   };
-  
+
   const tileClassName = ({ date, view }) => {
     if (view === 'month') {
       const dateStr = date.toISOString().split('T')[0]; // 날짜 형식: YYYY-MM-DD
@@ -180,9 +203,6 @@ const CalendarComponent = () => {
     }
     return null;
   };
-  
-  
-  
 
   return (
     <div className="calendar-container">
@@ -214,9 +234,7 @@ const CalendarComponent = () => {
             ) : (
               <ul>
                 {todos.map((todo) => (
-                  <li key={todo.todoId} onClick={() => openModal(todo)}>
-                    {todo.title}
-                  </li>
+                  <li key={todo.todoId} onClick={() => openModal(todo)}>{todo.title}</li>
                 ))}
               </ul>
             )}
@@ -227,9 +245,7 @@ const CalendarComponent = () => {
               <h3>{selectedDate}의 일정</h3>
               <ul>
                 {selectedDateTodos.map((todo) => (
-                  <li key={todo.todoId} onClick={() => openModal(todo)}>
-                    {todo.title}
-                  </li>
+                  <li key={todo.todoId} onClick={() => openModal(todo)}>{todo.title}</li>
                 ))}
               </ul>
             </div>
@@ -244,7 +260,7 @@ const CalendarComponent = () => {
             ) : (
               <ul>
                 {upcomingTodos.slice(0, 3).map((todo) => (
-                  <li key={todo.todoId}>
+                  <li key={todo.todoId} onClick={() => openModal(todo)}>
                     {todo.title} - {new Date(todo.startDate).toLocaleDateString()}
                   </li>
                 ))}
@@ -258,18 +274,23 @@ const CalendarComponent = () => {
         </div>
       </div>
 
-      
-
       {showModal && selectedTodo && (
         <div className="modal">
           <div className="modal-content">
-            <h3>{selectedTodo.title}</h3>
-            <p><strong>시작일:</strong> {formatDate(selectedTodo.startDate)}</p>
-            <p><strong>종료일:</strong> {formatDate(selectedTodo.endDate)}</p>
-            <p><strong>내용:</strong> {selectedTodo.content}</p>
-            <button onClick={handleEdit}>수정하기</button>
-            <button onClick={handleDelete}>삭제하기</button>
-            <button onClick={closeModal}>닫기</button>
+            <span className="close-btn" onClick={closeModal}>×</span>
+            <h4>{selectedTodo.title}</h4>
+            <p>{selectedTodo.description}</p>
+            <p>시작일: {formatDate(selectedTodo.startDate)}</p>
+            <p>종료일: {formatDate(selectedTodo.endDate)}</p>
+            <p>완료 여부: {selectedTodo.completeYn ? '완료' : '진행 중'}</p>
+              {selectedTodo.completeYn === false && (
+                <button onClick={handleMarkAsComplete}>완료 처리하기</button>
+              )}
+              {selectedTodo.completeYn === true && (
+                <button onClick={handleMarkAsComplete}>미완료로 바꾸기</button>
+              )}
+            <button onClick={handleEdit}>수정</button>
+            <button onClick={handleDelete}>삭제</button>
           </div>
         </div>
       )}

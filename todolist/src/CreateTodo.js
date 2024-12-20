@@ -82,7 +82,8 @@ const CreateTodoPage = () => {
       </div>
 
       <div>
-        <p>날짜: {startDate.toLocaleString()} ~ {endDate.toLocaleString()}</p>
+        <p>날짜: {startDate.toLocaleString()} <br/>
+            ~ {endDate.toLocaleString()}</p>
       </div>
 
       <button onClick={handleSubmit}>일정 추가</button>

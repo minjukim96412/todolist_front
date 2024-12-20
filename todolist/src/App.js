@@ -4,6 +4,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google'; // GoogleOAuthProvide
 import LoginPage from './Login'; // 로그인 페이지
 import CalendarComponent from './Calendar'; // 캘린더 컴포넌트
 import CreateTodoPage from './CreateTodo';
+import EditTodoPage from './EditTodo';
 function App() {
   return (
     <GoogleOAuthProvider clientId="351834792305-2adccofjnvfao16qouvvht123u9djg8e.apps.googleusercontent.com"> {/* GoogleOAuthProvider로 감싸기 */}
@@ -11,7 +12,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LoginPage />} /> {/* 로그인 페이지 경로 설정 */}
           <Route path="/calendar" element={<CalendarComponent />} /> {/* 캘린더 페이지 경로 설정 */}
-          <Route path="/create-todo" element={<CreateTodoPage />} /> {/* 캘린더 페이지 경로 설정 */}
+          <Route path="/create-todo" element={<CreateTodoPage />} /> {/* 일정 추가 페이지 경로 설정 */}
+          <Route path="/edit-todo" element={<EditTodoPage />} /> {/* 일정 수정 페이지 경로 설정 */}
         </Routes>
       </Router>
     </GoogleOAuthProvider>

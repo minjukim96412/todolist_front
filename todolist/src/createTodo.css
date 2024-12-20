@@ -1,13 +1,15 @@
 /* CreateTodoPage 스타일 */
-.create-todo-container {
+.create-todo-container,
+.edit-todo-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #f9f9f9;
+  background-color: #FFE2E2;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 400px;
+  min-width: 300px;
   margin: 50px auto;
 }
 
@@ -45,11 +47,11 @@
 }
 
 .react-datepicker__header {
-  background-color: #4CAF50;
+  background-color: #FFC7C7;
   color: white;
   font-size: 16px;
   border-radius: 4px 4px 0 0;
-  padding: 10px;
+  padding: 15px;
 }
 
 .react-datepicker__month {
@@ -65,7 +67,7 @@
 
 .react-datepicker__day--selected,
 .react-datepicker__day--keyboard-selected {
-  background-color: #4CAF50;
+  background-color: #f44336;
   color: white;
 }
 
@@ -132,14 +134,23 @@ input[type="text"],
 textarea {
   padding: 12px;
   font-size: 16px;
-  width: 100%;
+  width: 300px;
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-bottom: 20px;
   box-sizing: border-box;
+  background-color: #f6f6f6;
 }
 
 textarea {
   height: 100px;
   resize: vertical;
+}
+
+.btnContainer {
+  display: flex;
+}
+
+.dateBlock{
+  margin-left: 20%;
 }
