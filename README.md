@@ -18,7 +18,8 @@ CREATE USER 'todo'@'localhost' IDENTIFIED BY 'todo' <br/>
 - 리액트 실행 <br/>
 todolist_front> cd todolist <br/>
 todolist_front/todolist > npm start <br/>
-
+-프론트 실행 이후<br/>
+https://github.com/minjukim96412/todolist_back
 ## 🛠️ 기술 스택 todolist_front
 <img src="https://simpleicons.org/icons/createreactapp.svg" width="50px"/> **react :**  리액트를 활용하여 화면을 구현하였습니다.<br />
 <img src="https://simpleicons.org/icons/kakaotalk.svg" width="50px"/> **kakao API :**  카카오API를 활용하여 소셜로그인을 구현하였습니다.<br />
