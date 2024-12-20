@@ -9,12 +9,6 @@
   추가,수정,삭제 할 수 있습니다.
 
 ## ➡️ 프로젝트 실행방법
-- 터미널 <br/>
-mysql -u root -p <br/>
-- mysql todolist_db 데이터베이스 생성 <br/>
-CREATE DATABASE todolist_db <br/>
-- todo 계정 생성 <br/> 
-CREATE USER 'todo'@'localhost' IDENTIFIED BY 'todo' <br/>
 - 리액트 실행 <br/>
 todolist_front> cd todolist <br/>
 todolist_front/todolist > npm start <br/>
