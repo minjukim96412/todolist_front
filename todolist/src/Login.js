@@ -33,7 +33,7 @@ const LoginPage = () => {
       sessionStorage.setItem('user', JSON.stringify(userData));
       alert('회원가입이 완료되었습니다.');
       setNicknameModalOpen(false); // 닉네임 모달 닫기
-      navigate('/calendar'); // 캘린더 페이지로 이동
+      navigate('/'); // 캘린더 페이지로 이동
     } catch (error) {
       console.error('Error saving user info:', error);
       alert('회원가입에 실패했습니다. 다시 시도해주세요.');

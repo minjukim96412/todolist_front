@@ -50,9 +50,10 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
   
-  h2 {
+  .modal-content h2 {
     font-size: 28px;
     margin-bottom: 20px;
+    margin-left: 20px;
     color: #333;
   }
   
@@ -282,6 +283,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 }
 
 .modal-content {
@@ -306,7 +308,7 @@
   width: 2px;
   height: 100%;
   background-color: red; /* 선 색상 */
-  z-index: -1;  /* 선이 날짜 위로 가도록 설정 */
+  z-index: 100;  /* 선이 날짜 위로 가도록 설정 */
 }
 
 button {
@@ -322,4 +324,17 @@ button {
 .close-btn {
   font-size: 40px;
   float: right;
+}
+
+.modal-content p {
+  margin-top: 10px;
+}
+
+.delete-modal-content{
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
 }

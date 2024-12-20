@@ -16,6 +16,7 @@ const CalendarComponent = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null); // 선택된 날짜
   const [showModal, setShowModal] = useState(false); // 모달 상태
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState(null); // 선택된 일정
   const navigate = useNavigate();
   const user = JSON.parse(sessionStorage.getItem('user') || '{}');
@@ -107,13 +108,12 @@ const CalendarComponent = () => {
       setAllTodos(allTodos.map(todo => 
         todo.todoId === selectedTodo.todoId ? { ...todo, completeYn: updatedCompleteYn } : todo
       ));
-      
+      fetchAllTodos();
       closeModal();  // 모달 닫기
     } catch (error) {
       alert('상태 변경에 실패했습니다.');
     }
   };
-  
 
   // 페이지 로드 시 일정 가져오기
   useEffect(() => {
@@ -132,13 +132,26 @@ const CalendarComponent = () => {
     setShowModal(true);
   };
 
+  // 삭제 확인 모달 열기
+  const openDeleteConfirm = () => {
+    setShowModal(false);
+    setShowDeleteConfirm(true);
+  };
+
+  // 삭제 확인 모달 닫기
+  const closeDeleteConfirm = () => {
+    setShowDeleteConfirm(false);
+    setShowModal(true);
+  };
+
   // 일정 삭제
   const handleDelete = async () => {
     if (!selectedTodo) return;
     try {
       await axios.delete(`${API_BASE_URL}/todos/${selectedTodo.todoId}`);
       setAllTodos(allTodos.filter(todo => todo.todoId !== selectedTodo.todoId));
-      closeModal();
+      setShowDeleteConfirm(false);
+      fetchAllTodos();
     } catch (error) {
       alert('일정 삭제에 실패했습니다.');
     }
@@ -179,31 +192,6 @@ const CalendarComponent = () => {
     return null;
   };
 
-  const tileClassName = ({ date, view }) => {
-    if (view === 'month') {
-      const dateStr = date.toISOString().split('T')[0]; // 날짜 형식: YYYY-MM-DD
-  
-      // 일정의 시작일과 종료일을 확인하여 선을 연결
-      const startDateTodo = allTodos.find(todo => {
-        const startDate = new Date(todo.startDate);
-        startDate.setHours(0, 0, 0, 0);
-        return startDate.toISOString().split('T')[0] === dateStr;
-      });
-  
-      const endDateTodo = allTodos.find(todo => {
-        const endDate = new Date(todo.endDate);
-        endDate.setHours(23, 59, 59, 999);
-        return endDate.toISOString().split('T')[0] === dateStr;
-      });
-  
-      // 시작일과 종료일을 연결하는 선 스타일
-      if (startDateTodo && endDateTodo) {
-        return 'start-end-todo'; // 클래스 이름을 통해 스타일 적용
-      }
-    }
-    return null;
-  };
-
   return (
     <div className="calendar-container">
       <header>
@@ -220,7 +208,6 @@ const CalendarComponent = () => {
             onChange={handleDateChange} 
             value={date} 
             tileContent={tileContent}
-            tileClassName={tileClassName}
           />
         </div>
 
@@ -274,12 +261,23 @@ const CalendarComponent = () => {
         </div>
       </div>
 
+      {/* 삭제 확인 모달 */}
+      {showDeleteConfirm && (
+        <div className="modal">
+          <div className="delete-modal-content">
+            <h3>정말 삭제하시겠습니까?</h3>
+            <button onClick={handleDelete}>확인</button>
+            <button onClick={closeDeleteConfirm}>취소</button>
+          </div>
+        </div>
+      )}
+
       {showModal && selectedTodo && (
         <div className="modal">
           <div className="modal-content">
             <span className="close-btn" onClick={closeModal}>×</span>
-            <h4>{selectedTodo.title}</h4>
-            <p>{selectedTodo.description}</p>
+            <h2>{selectedTodo.title}</h2>
+            <h4>{selectedTodo.content}</h4>
             <p>시작일: {formatDate(selectedTodo.startDate)}</p>
             <p>종료일: {formatDate(selectedTodo.endDate)}</p>
             <p>완료 여부: {selectedTodo.completeYn ? '완료' : '진행 중'}</p>
@@ -287,10 +285,10 @@ const CalendarComponent = () => {
                 <button onClick={handleMarkAsComplete}>완료 처리하기</button>
               )}
               {selectedTodo.completeYn === true && (
-                <button onClick={handleMarkAsComplete}>미완료로 바꾸기</button>
+                <button onClick={handleMarkAsComplete}>미완료</button>
               )}
             <button onClick={handleEdit}>수정</button>
-            <button onClick={handleDelete}>삭제</button>
+            <button onClick={openDeleteConfirm}>삭제</button>
           </div>
         </div>
       )}
