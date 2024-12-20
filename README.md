@@ -17,4 +17,4 @@ CREATE DATABASE todolist_db;
 CREATE USER 'todo'@'localhost' IDENTIFIED BY 'todo';
 
 ###데이터베이스 구성
-
+<img src= "todolist/src/todo_Logical.png"/>
