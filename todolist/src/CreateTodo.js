@@ -4,6 +4,7 @@ import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';  // 날짜 선택기 CSS
 import './createTodo.css';
+import { toast } from 'react-toastify';
 
 const CreateTodoPage = () => {
   const navigate = useNavigate();
@@ -12,22 +13,44 @@ const CreateTodoPage = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async () => {
+    // 폼 유효성 검사
+    if (!todoTitle.trim() || !todoContent.trim()) {
+      setError('제목과 내용을 모두 입력해주세요.');
+      return;
+    }
+
+    // 날짜 유효성 검사 추가
+    if (endDate < startDate) {
+      setError('종료 날짜는 시작 날짜보다 이후여야 합니다.');
+      return;
+    }
+
+    setError('');
+    setIsSubmitting(true);
+
     try {
-      const response = await axios.post('http://localhost:8888/api/todos', { 
+      const response = await axios.post('http://localhost:8888/api/todos', {
         memId: user.memId,
-        title: todoTitle,
-        content: todoContent,
+        title: todoTitle.trim(),
+        content: todoContent.trim(),
         startDate: startDate,
         endDate: endDate
       });
+      toast.success('일정이 성공적으로 추가되었습니다!');
       console.log('Todo added successfully');
-      navigate('/');  // 일정 추가 후 메인 페이지로 이동 (필요에 따라 수정)
+      navigate('/');
     } catch (error) {
+      setError('일정 추가 중 오류가 발생했습니다. 다시 시도해주세요.');
       console.error('Error adding todo:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
+  
 
   return (
     <div className="create-todo-container">
@@ -86,7 +109,14 @@ const CreateTodoPage = () => {
             ~ {endDate.toLocaleString()}</p>
       </div>
 
-      <button onClick={handleSubmit}>일정 추가</button>
+      {error && <p className="error-message" style={{ color: 'red' }}>{error}</p>}
+
+      <button 
+        onClick={handleSubmit} 
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? '추가 중...' : '일정 추가'}
+      </button>
     </div>
   );
 };

@@ -40,16 +40,31 @@ const EditTodoPage = () => {
   }, [todoId, navigate]);
 
   const handleUpdate = async () => {
+    // 입력 유효성 검사 추가
+    if (!todoTitle.trim() || !todoContent.trim()) {
+      alert('제목과 내용을 모두 입력해주세요.');
+      return;
+    }
+
+    if (startDate > endDate) {
+      alert('종료일은 시작일보다 빠를 수 없습니다.');
+      return;
+    }
+
     try {
-      await axios.put(`http://localhost:8888/api/todos/${todoId}`, {
-        title: todoTitle,
-        content: todoContent,
+      const response = await axios.put(`http://localhost:8888/api/todos/${todoId}`, {
+        title: todoTitle.trim(),
+        content: todoContent.trim(),
         startDate: startDate,
         endDate: endDate,
       });
-      console.log('Todo updated successfully');
-      navigate('/'); // 수정 후 메인 페이지로 이동
+      
+      if (response.status === 200) {
+        alert('일정이 성공적으로 수정되었습니다.');
+        navigate('/');
+      }
     } catch (error) {
+      alert(`일정 수정 중 오류가 발생했습니다: ${error.response?.data?.message || error.message}`);
       console.error('Error updating todo:', error);
     }
   };
@@ -104,11 +119,17 @@ const EditTodoPage = () => {
         <p>종료 날짜 및 시간:</p>
         <DatePicker
           selected={endDate}
-          onChange={(date) => setEndDate(date)}
+          onChange={(date) => {
+            if (date < startDate) {
+              alert('종료일은 시작일보다 빠를 수 없습니다.');
+              return;
+            }
+            setEndDate(date);
+          }}
           dateFormat="yyyy-MM-dd HH:mm"
           showTimeSelect
           timeFormat="HH:mm"
-          timeIntervals={30} // 30분 단위로 선택
+          timeIntervals={30}
           minDate={startDate}
           className="date-picker"
         />
@@ -128,3 +149,4 @@ const EditTodoPage = () => {
 };
 
 export default EditTodoPage;
+

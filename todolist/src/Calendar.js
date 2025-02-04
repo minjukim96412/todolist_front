@@ -20,6 +20,7 @@ const CalendarComponent = () => {
   const [selectedTodo, setSelectedTodo] = useState(null); // 선택된 일정
   const navigate = useNavigate();
   const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  const [calendarData, setCalendarData] = useState({}); // 날짜별 todo 데이터
 
   // 로그인 검증
   useEffect(() => {
@@ -42,55 +43,66 @@ const CalendarComponent = () => {
   const fetchAllTodos = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_BASE_URL}/todos/mem/${user.memId}`);
-      const todosData = response.data;
-      setAllTodos(todosData);
+      const response = await axios.get(`${API_BASE_URL}/todos/mem/${user.memId}/calendar`);
+      const data = response.data;
       
-      // 오늘의 일정, 다가오는 일정, 선택된 날짜 일정 필터링
-      const today = new Date().toISOString().split('T')[0];
-      const todayTodos = filterTodosByDate(todosData, today);
+      setCalendarData(data);
+      
+      const uniqueTodos = new Map();
+      Object.values(data).flat().forEach(todo => {
+        if (!uniqueTodos.has(todo.todoId)) {
+          uniqueTodos.set(todo.todoId, todo);
+        }
+      });
+      const allTodosList = Array.from(uniqueTodos.values());
+      setAllTodos(allTodosList);
+      
+      // 현재 시간 가져오기
+      const now = new Date();
+      const today = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+      const todayStr = today.toISOString().split('T')[0];
+      
+      // 오늘의 일정 필터링 (현재 시간 이후에 끝나는 일정만)
+      const todayTodos = (data[todayStr] || [])
+        .filter(todo => new Date(todo.endDate) > now)
+        .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+      
       setTodos(todayTodos);
-      filterUpcomingTodos(todosData);
+      
+      // 다가오는 일정 필터링 (현재 시간 이후에 시작하는 일정만)
+      const upcoming = allTodosList
+        .filter(todo => {
+          const startTime = new Date(todo.startDate);
+          const todoDate = todo.startDate.split(' ')[0];
+          return startTime > now && todoDate !== todayStr;
+        })
+        .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+        .slice(0, 3);
+      
+      setUpcomingTodos(upcoming);
       
       if (selectedDate) {
-        const selectedDateTodos = filterTodosByDate(todosData, selectedDate);
-        setSelectedDateTodos(selectedDateTodos);
-      } else {
-        setSelectedDate(today); // 기본적으로 오늘 날짜로 설정
+        setSelectedDateTodos(data[selectedDate] || []);
       }
+      
     } catch (error) {
-      alert('일정을 가져오는 중 문제가 발생했습니다. 다시 시도해주세요.');
+      console.error('Error fetching todos:', error);
+      alert('일정을 가져오는 중 문제가 발생했습니다.');
     } finally {
       setLoading(false);
     }
   }, [user.memId, selectedDate]);
 
-  // 일정 필터링 (특정 날짜 기준)
-  const filterTodosByDate = (data, date) => {
-    const dateObj = new Date(date);
-    dateObj.setHours(0, 0, 0, 0);
-    return data.filter((todo) => {
-      const startDate = new Date(todo.startDate);
-      const endDate = new Date(todo.endDate);
-      startDate.setHours(0, 0, 0, 0);
-      endDate.setHours(23, 59, 59, 999);
-      return startDate <= dateObj && endDate >= dateObj;
-    });
-  };
-
-  // 다가오는 일정 필터링
-  const filterUpcomingTodos = (data) => {
-    const upcoming = data.filter((todo) => new Date(todo.startDate) > new Date());
-    setUpcomingTodos(upcoming.sort((a, b) => new Date(a.startDate) - new Date(b.startDate)));
-  };
-
-  // 날짜 선택 핸들러
-  const handleDateChange = (date) => {
-    const fixedDate = new Date(date);
-    fixedDate.setHours(fixedDate.getHours() + 9); // 한국 시간으로 맞춤
-    setDate(fixedDate);
-    const isoDate = fixedDate.toISOString().split('T')[0]; 
-    setSelectedDate(isoDate);
+  const handleDateChange = (newDate) => {
+    setDate(newDate);
+    // 날짜를 YYYY-MM-DD 형식으로 직접 변환
+    const year = newDate.getFullYear();
+    const month = String(newDate.getMonth() + 1).padStart(2, '0');
+    const day = String(newDate.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    
+    setSelectedDate(formattedDate);
+    setSelectedDateTodos(calendarData[formattedDate] || []);
   };
 
   // 완료 처리
@@ -98,18 +110,17 @@ const CalendarComponent = () => {
     if (!selectedTodo) return;
     
     try {
-      const updatedCompleteYn = selectedTodo.completeYn === true ? false : true;  // 상태를 반전시킴
+      const updatedCompleteYn = selectedTodo.completeYn === true ? false : true;
       
       await axios.patch(`${API_BASE_URL}/todos/${selectedTodo.todoId}`, {
         completeYn: updatedCompleteYn
       });
       
-      // 완료 상태 업데이트 후 상태 반영
       setAllTodos(allTodos.map(todo => 
         todo.todoId === selectedTodo.todoId ? { ...todo, completeYn: updatedCompleteYn } : todo
       ));
       fetchAllTodos();
-      closeModal();  // 모달 닫기
+      closeModal();
     } catch (error) {
       alert('상태 변경에 실패했습니다.');
     }
@@ -159,7 +170,7 @@ const CalendarComponent = () => {
 
   // 일정 수정
   const handleEdit = () => {
-    navigate('/edit-todo', { state: { todoId: selectedTodo.todoId } }); // todoId 전달
+    navigate('/edit-todo', { state: { todoId: selectedTodo.todoId } });
     closeModal();
   };
 
@@ -168,26 +179,60 @@ const CalendarComponent = () => {
     navigate('/');
   };
 
+  const getRandomColor = (id) => {
+    const colors = [
+      '#FFB6C1', '#FFD700', '#98FB98', '#87CEEB', 
+      '#DDA0DD', '#F0E68C', '#E6E6FA', '#FFA07A'
+    ];
+    return colors[id % colors.length];
+  };
+
   const tileContent = ({ date, view }) => {
     if (view === 'month') {
-      const dateStr = date.toISOString().split('T')[0]; // 날짜 형식: YYYY-MM-DD
-  
-      // 해당 날짜에 일정이 있는지 확인
-      const hasTodo = allTodos.some(todo => {
-        const startDate = new Date(todo.startDate);
-        const endDate = new Date(todo.endDate);
-        startDate.setHours(0, 0, 0, 0);
-        endDate.setHours(23, 59, 59, 999);
-  
-        // 날짜 비교: 일정의 시작일이 현재 날짜보다 같거나 이전, 종료일이 현재 날짜보다 이전이면 표시하지 않음
-        return (
-          (startDate <= date && endDate >= date) ||  // 시작일과 종료일이 해당 날짜에 포함되는 경우
-          (startDate.toISOString().split('T')[0] === dateStr) ||  // 시작일이 해당 날짜와 동일한 경우
-          (endDate.toISOString().split('T')[0] === dateStr && date < endDate) // 종료일이 해당 날짜와 동일하지만, 종료일 이후는 포함되지 않음
-        );
-      });
-  
-      return hasTodo ? <span className="todo-icon">💕</span> : null;
+      const koreaDate = new Date(date.getTime() + (9 * 60 * 60 * 1000));
+      const currentDate = koreaDate.toISOString().split('T')[0];
+      
+      const todosForDate = [];
+      if (calendarData[currentDate]) {
+        const todoIdsForDate = new Set(calendarData[currentDate].map(todo => todo.todoId));
+        allTodos.forEach(todo => {
+          if (todoIdsForDate.has(todo.todoId)) {
+            todosForDate.push(todo);
+          }
+        });
+
+        todosForDate.sort((a, b) => {
+          const aStart = new Date(a.startDate);
+          const bStart = new Date(b.startDate);
+          const aEnd = new Date(a.endDate);
+          const bEnd = new Date(b.endDate);
+
+          if (aStart.getTime() === bStart.getTime()) {
+            return bEnd.getTime() - aEnd.getTime();
+          }
+          return aStart.getTime() - bStart.getTime();
+        });
+      }
+
+      return (
+        <div className="tile-content">
+          {todosForDate.map((todo, index) => (
+            <div
+              key={`${todo.todoId}-${index}`}
+              className="todo-line continue-both"
+              style={{
+                backgroundColor: getRandomColor(todo.todoId),
+                top: `${60 + (index * 15)}%`,
+                height: '4px'
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                openModal(todo);
+              }}
+            />
+          ))}
+        </div>
+      );
     }
     return null;
   };
@@ -208,6 +253,20 @@ const CalendarComponent = () => {
             onChange={handleDateChange} 
             value={date} 
             tileContent={tileContent}
+            locale="ko-KR"
+            calendarType="gregory"
+            formatDay={(locale, date) => date.getDate()}
+            tileClassName={({ date, view }) => {
+              if (view === 'month') {
+                const today = new Date();
+                if (date.getDate() === today.getDate() &&
+                    date.getMonth() === today.getMonth() &&
+                    date.getFullYear() === today.getFullYear()) {
+                  return 'highlight-today';
+                }
+              }
+              return null;
+            }}
           />
         </div>
 
@@ -246,9 +305,14 @@ const CalendarComponent = () => {
               <p>다가오는 일정이 없습니다.</p>
             ) : (
               <ul>
-                {upcomingTodos.slice(0, 3).map((todo) => (
+                {upcomingTodos.map((todo) => (
                   <li key={todo.todoId} onClick={() => openModal(todo)}>
-                    {todo.title} - {new Date(todo.startDate).toLocaleDateString()}
+                    {todo.title} - {new Date(todo.startDate).toLocaleDateString('ko-KR', {
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
                   </li>
                 ))}
               </ul>
@@ -261,7 +325,6 @@ const CalendarComponent = () => {
         </div>
       </div>
 
-      {/* 삭제 확인 모달 */}
       {showDeleteConfirm && (
         <div className="modal">
           <div className="delete-modal-content">
@@ -281,12 +344,12 @@ const CalendarComponent = () => {
             <p>시작일: {formatDate(selectedTodo.startDate)}</p>
             <p>종료일: {formatDate(selectedTodo.endDate)}</p>
             <p>완료 여부: {selectedTodo.completeYn ? '완료' : '진행 중'}</p>
-              {selectedTodo.completeYn === false && (
-                <button onClick={handleMarkAsComplete}>완료 처리하기</button>
-              )}
-              {selectedTodo.completeYn === true && (
-                <button onClick={handleMarkAsComplete}>미완료</button>
-              )}
+            {selectedTodo.completeYn === false && (
+              <button onClick={handleMarkAsComplete}>완료 처리하기</button>
+            )}
+            {selectedTodo.completeYn === true && (
+              <button onClick={handleMarkAsComplete}>미완료</button>
+            )}
             <button onClick={handleEdit}>수정</button>
             <button onClick={openDeleteConfirm}>삭제</button>
           </div>
