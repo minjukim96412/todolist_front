@@ -159,8 +159,8 @@ const LoginPage = () => {
         script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
         script.async = true;
         script.onload = () => {
-          if (window.Kakao && process.env.REACT_APP_KAKAO_KEY) {
-            window.Kakao.init(process.env.REACT_APP_KAKAO_KEY);
+          if (window.Kakao && window.ENV.REACT_APP_KAKAO_KEY) {
+            window.Kakao.init(window.ENV.REACT_APP_KAKAO_KEY);
           } else {
             console.error('Kakao SDK 초기화 실패');
           }
