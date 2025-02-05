@@ -1,20 +1,32 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
+import { todoAPI } from '../../services/api';
 import 'react-datepicker/dist/react-datepicker.css';  // 날짜 선택기 CSS
-import './createTodo.css';
+import '../../styles/createTodo.css';
 import { toast } from 'react-toastify';
 
 const CreateTodoPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [todoTitle, setTodoTitle] = useState('');
   const [todoContent, setTodoContent] = useState('');
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(
+    location.state?.startDate ? new Date(location.state.startDate) : new Date()
+  );
+  const [endDate, setEndDate] = useState(
+    location.state?.endDate ? new Date(location.state.endDate) : new Date()
+  );
   const user = JSON.parse(sessionStorage.getItem('user') || '{}');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  // 로그인 검증
+  useEffect(() => {
+    if (!user.memId) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async () => {
     // 폼 유효성 검사
@@ -33,13 +45,14 @@ const CreateTodoPage = () => {
     setIsSubmitting(true);
 
     try {
-      await axios.post('http://localhost:8888/api/todos', {
+      await todoAPI.createTodo({
         memId: user.memId,
         title: todoTitle.trim(),
         content: todoContent.trim(),
         startDate: startDate,
         endDate: endDate
       });
+      
       toast.success('일정이 성공적으로 추가되었습니다!');
       console.log('Todo added successfully');
       navigate('/');
@@ -114,6 +127,7 @@ const CreateTodoPage = () => {
       <button 
         onClick={handleSubmit} 
         disabled={isSubmitting}
+        className='create-todo-btn'
       >
         {isSubmitting ? '추가 중...' : '일정 추가'}
       </button>

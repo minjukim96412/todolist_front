@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleLogin } from '@react-oauth/google'; // Google OAuth 컴포넌트
-import axios from 'axios'; // HTTP 요청을 위한 axios
 import { useNavigate } from 'react-router-dom'; // 페이지 이동
-import styles from './login.module.css'; // CSS Module
-import kakaoLogo from './kakao_login.png'; // Kakao 로그인 버튼 이미지
+import '../../styles/login.css';  // .module.css 에서 일반 .css로 변경
+import kakaoLogo from '../../assets/kakao_login.png'; // Kakao 로그인 버튼 이미지
+import { authAPI } from '../../services/api';
 
-const LoginPage = () => {
+import API_CONFIG from '../../utils/config';
+
+const LoginPage = ({ kakaoClientId }) => {
   const [isNicknameModalOpen, setNicknameModalOpen] = useState(false); // 닉네임 입력 모달 상태
   const [userInfo, setUserInfo] = useState(null); // 사용자 정보 저장
   const [nickname, setNickname] = useState(''); // 닉네임 입력 값
@@ -22,18 +24,11 @@ const LoginPage = () => {
   // 사용자 정보 저장 함수
   const saveUserInfo = async (userData) => {
     try {
-      const apiUrl = userData.provider === 'google'
-        ? 'http://localhost:8888/api/login/google'
-        : 'http://localhost:8888/api/login/kakao';
-  
-      await axios.post(apiUrl, userData, {
-        headers: { 'Content-Type': 'application/json' },
-      });
-
+      await authAPI.saveUserInfo(userData);
       sessionStorage.setItem('user', JSON.stringify(userData));
       alert('회원가입이 완료되었습니다.');
-      setNicknameModalOpen(false); // 닉네임 모달 닫기
-      navigate('/'); // 캘린더 페이지로 이동
+      setNicknameModalOpen(false);
+      navigate('/calendar');
     } catch (error) {
       console.error('Error saving user info:', error);
       alert('회원가입에 실패했습니다. 다시 시도해주세요.');
@@ -111,12 +106,9 @@ const LoginPage = () => {
   // 이메일로 사용자 존재 여부 확인
   const checkIfUserExists = async (email) => {
     try {
-      const response = await axios.post('http://localhost:8888/api/login/check-user', { email }, { 
-        withCredentials: true  // 자격 증명 포함
-      });
+      const response = await authAPI.checkUser(email);
       if (response.data.exists) {
-        const user = response.data.user; // 백엔드에서 받은 사용자 정보
-        return { exists: true, user };
+        return { exists: true, user: response.data.user };
       }
       return { exists: false };
     } catch (error) {
@@ -133,11 +125,7 @@ const LoginPage = () => {
   // 닉네임 제출
   const handleNicknameSubmit = async () => {
     try {
-      const result = await axios.post(
-        'http://localhost:8888/api/login/check-nickname',
-        { nickname },
-        { headers: { 'Content-Type': 'application/json' } }
-      );
+      const result = await authAPI.checkNickname(nickname);
 
       if (result.data.exists) {
         alert('이미 사용 중인 닉네임입니다. 다른 닉네임을 선택하세요.');
@@ -153,50 +141,38 @@ const LoginPage = () => {
 
   // Kakao SDK 로드
   useEffect(() => {
-    const fetchConfig = async () => {
-      try {
-        const response = await axios.get('http://localhost:8888/api/config');
-        const config = response.data;
-        
-        if (!window.Kakao) {
-          const script = document.createElement('script');
-          script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
-          script.async = true;
-          script.onload = () => {
-            if (window.Kakao && config.KAKAO_KEY) {
-              window.Kakao.init(config.KAKAO_KEY);
-            }
-          };
-          document.body.appendChild(script);
+    if (!window.Kakao) {
+      const script = document.createElement('script');
+      script.src = API_CONFIG.KAKAO_SDK_URL;
+      script.async = true;
+      script.onload = () => {
+        if (window.Kakao && kakaoClientId) {
+          window.Kakao.init(kakaoClientId);
         }
-      } catch (error) {
-        console.error('설정을 가져오는데 실패했습니다:', error);
-      }
-    };
-  
-    fetchConfig();
-  }, []);
+      };
+      document.body.appendChild(script);
+    } else if (kakaoClientId) {
+      window.Kakao.init(kakaoClientId);
+    }
+  }, [kakaoClientId]);
 
   return (
-    <div className={styles['login-container']}>
+    <div className="login-container">
       <h1>TODO-LIST</h1>
       <h2>LOGIN</h2>
 
-      {/* Google 로그인 버튼 */}
       <GoogleLogin
         onSuccess={handleGoogleLoginSuccess}
         onError={() => alert('Google 로그인에 실패했습니다. 다시 시도해주세요.')}
         theme="outline"
       />
 
-      {/* Kakao 로그인 버튼 */}
-      <button className={styles['kakao-login-button']} onClick={handleKakaoLoginSuccess}>
+      <button className="kakao-login-button" onClick={handleKakaoLoginSuccess}>
         <img src={kakaoLogo} alt="Kakao Login" width="140px" />
       </button>
 
-      {/* 닉네임 입력 모달 */}
       {isNicknameModalOpen && (
-        <div className={styles['nickname-modal']}>
+        <div className="nickname-modal">
           <h3>닉네임을 입력해주세요</h3>
           <input 
             type="text" 

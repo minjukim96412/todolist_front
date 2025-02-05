@@ -1,0 +1,1023 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  animation: none !important;
+  transition: none !important;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Noto Sans KR', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #F6F6F6;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  min-width: 900px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: 60px;
+  margin-bottom: 20px;
+}
+
+header h2 {
+  font-size: 40px;
+  width: 40%;
+  font-weight: bold;
+  margin: 0;
+  margin-left: 10%;
+}
+
+header p {
+  font-size: 16px;
+  margin: 0;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.calendar-container {
+  width: 85%;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+}.react-calendar
+
+.modal-content h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  margin-left: 20px;
+  color: #333;
+}
+
+.react-calendar {
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  background-color: white;
+}
+
+.react-calendar__navigation {
+  margin-bottom: 15px;
+}
+
+.react-calendar__navigation button {
+  min-width: 44px;
+  background: none;
+  font-size: 1.1em;
+  color: #333;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: #f8f8f8;
+  border-radius: 4px;
+}
+
+.react-calendar__viewContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.react-calendar__month-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.react-calendar__month-view__days {
+  flex: 1;
+}
+
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  padding: 8px;
+}
+
+.react-calendar__tile {
+  position: relative;
+  height: 80px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 10px !important;
+  font-size: 0.9em;
+  color: #333;
+  border: 1px solid #f0f0f0;
+}
+
+.react-calendar__tile--now {
+  background: #E8F6F3 !important;
+}
+
+.react-calendar__tile--active {
+  background: #A6E3E9 !important;
+  color: white !important;
+}
+
+.react-calendar__tile:hover {
+  background-color: #f8f8f8 !important;
+}
+
+.react-calendar__tile--active:hover {
+  background: #8CD4DB !important;
+}
+
+.react-calendar__month-view__days__day {
+  padding: 8px !important;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #FF6B6B;
+}
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #ccc !important;
+}
+
+.react-calendar button:hover {
+  background-color: #f5f5f5;
+}
+
+.react-calendar abbr {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.react-calendar__tile--active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.todo-list {
+  margin-top: 20px;
+}
+
+.add-todo {
+  margin-top: auto;
+  padding: 10px 0;
+}
+
+.add-todo input {
+  flex-grow: 1;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.add-todo button {
+  width: 100%;
+  padding: 10px;
+  background-color: #A6E3E9;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-todo button:hover {
+  background-color: #71C9CE;
+}
+
+.todo-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.todo-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f9f9f9;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.todo-list li button {
+  background-color: #f44336;
+  border-radius: 4px;
+  padding: 5px 10px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.todo-list li button:hover {
+  background-color: #e53935;
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.popup button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.popup button:hover {
+  background-color: #45a049;
+}
+
+.calendar-wrapper {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+  height: calc(100vh - 100px);
+  min-height: 600px;
+  background-color: #fff;
+}
+
+.calendar-left {
+  flex: 2;
+  display: flex;
+  min-width: 700px;
+}
+
+.calendar-right {
+  flex: none;
+  width: 280px;
+  background-color: #FFE2E2;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: hidden;
+  position: relative;
+}
+
+.today-schedule,
+.selected-date-schedule,
+.upcoming-schedule {
+  flex: 0 0 26%;
+  margin-bottom: 3px;
+  position: relative;
+}
+
+.today-schedule h3,
+.selected-date-schedule h3,
+.upcoming-schedule h3 {
+  margin: 0 0 3px 0;
+  height: 20px;
+  line-height: 20px;
+  font-size: 1em;
+  color: #333;
+}
+
+.today-schedule ul,
+.selected-date-schedule ul,
+.upcoming-schedule ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  height: calc(100% - 23px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.today-schedule li,
+.selected-date-schedule li,
+.upcoming-schedule li {
+  padding: 6px 8px;
+  margin-bottom: 3px;
+  background-color: white;
+  border-radius: 4px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+}
+
+.calendar-right button {
+  margin-top: auto;
+  margin-bottom: 0;
+  background-color: #A6E3E9;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+.calendar-right,
+.today-schedule,
+.selected-date-schedule,
+.upcoming-schedule,
+.calendar-right ul,
+.calendar-right li {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
+  contain: strict;
+}
+
+.calendar-right *::-webkit-scrollbar {
+  width: 4px;
+}
+
+.calendar-right *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.calendar-right *::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 2px;
+}
+
+.today-schedule.loading {
+  opacity: 0.7;
+}
+
+.today-schedule ul.loading {
+  opacity: 0.7;
+}
+
+.today-schedule.loading,
+.today-schedule ul.loading {
+  opacity: 1 !important;
+}
+
+.loading {
+  opacity: 1 !important;
+}
+
+.nickname {
+  font-size: 25px; 
+  font-weight: bold; 
+  color: #71C9CE;
+}
+
+.close-btn {
+  font-size: 40px;
+  float: right;
+}
+
+.modal-content p {
+  margin-top: 10px;
+}
+
+.delete-modal-content{
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.has-todo {
+  background-color: #ffe6e6 !important;
+  position: relative;
+}
+
+.continue-left::before {
+  content: '';
+  position: absolute;
+  left: -50%;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  background-color: #ff9999;
+}
+
+.continue-right::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  background-color: #ff9999;
+}
+
+.todo-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+[class*="continue-left-"]::before,
+[class*="continue-right-"]::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  height: 6px;
+  width: 50%;
+  z-index: 1;
+  opacity: 0.7;
+}
+
+[class*="continue-left-"]::before {
+  left: 0;
+  transform: translateY(-50%);
+}
+
+[class*="continue-right-"]::after {
+  right: 0;
+  transform: translateY(-50%);
+}
+
+.react-calendar__tile {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.todo-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-size: 1.2em;
+}
+
+.react-calendar__tile:hover {
+  z-index: 0;
+}
+
+
+.todo-line:hover {
+  opacity: 0.8;
+  height: 6px !important;
+  transform: translateY(-1px);
+}
+
+.continue-right {
+  left: 50%;
+  right: -2px;
+}
+
+.continue-left {
+  left: -2px;
+  right: 50%;
+}
+
+.continue-both {
+  left: -2px;
+  right: -2px;
+}
+
+.tile-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  box-sizing: border-box;
+}
+
+.highlight-today {
+  position: relative;
+}
+
+.highlight-today::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #4ECDC4;
+}
+
+@media (max-width: 1100px) {
+  body {
+    min-width: 1100px;
+  }
+  
+  .calendar-container {
+    width: 1100px;
+    min-width: 1100px;
+  }
+}
+
+html {
+  margin-left: calc(100vw - 100%);
+  margin-right: 0;
+}
+
+.calendar-right::-webkit-scrollbar,
+.today-schedule ul::-webkit-scrollbar {
+  width: 8px;
+  position: absolute;
+  right: 0;
+}
+
+.calendar-right::-webkit-scrollbar-track,
+.today-schedule ul::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.calendar-right::-webkit-scrollbar-thumb,
+.today-schedule ul::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.calendar-right::-webkit-scrollbar-thumb:hover,
+.today-schedule ul::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.calendar-right,
+.today-schedule,
+.today-schedule ul,
+.today-schedule li {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
+  contain: layout style paint;
+}
+
+@media screen and (min-width: 0\0) {
+  .calendar-right,
+  .today-schedule,
+  .today-schedule ul,
+  .today-schedule li {
+    transform: none !important;
+  }
+}
+
+.calendar-right *:focus {
+  outline: none !important;
+}
+
+.calendar-right .loading-indicator {
+  display: none;
+}
+
+.calendar-right div:empty,
+.calendar-right div:only-child:empty {
+  display: none;
+}
+
+.today-schedule:empty {
+  min-height: 200px;
+}
+
+.today-schedule ul:empty {
+  min-height: 150px;
+}
+
+* {
+  animation: none !important;
+  transition: none !important;
+}
+
+.calendar-right,
+.today-schedule,
+.today-schedule ul,
+.today-schedule li {
+  contain: strict;
+  will-change: auto;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+@media (min-height: 800px) {
+  .calendar-wrapper {
+    height: calc(100vh - 120px);
+  }
+}
+
+@media (max-height: 700px) {
+  .calendar-wrapper {
+    height: 600px;
+  }
+}
+
+.today-schedule p,
+.selected-date-schedule p,
+.upcoming-schedule p {
+  margin: 0;
+  padding: 4px 8px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-nickname-btn {
+  padding: 5px 10px;
+  background-color: #A6E3E9;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.edit-nickname-btn:hover {
+  background-color: #89D4DB;
+}
+
+.nickname-modal {
+  max-width: 400px;
+  padding: 20px;
+  z-index: 300;
+  display: flow;
+  width: auto;
+}
+
+.nickname-modal h3 {
+  margin-bottom: 15px;
+}
+
+.nickname-modal input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.modal-buttons button {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-buttons button:first-child {
+  background-color: #A6E3E9;
+  color: white;
+}
+
+.modal-buttons button:last-child {
+  background-color: #ddd;
+}
+
+.modal-buttons button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 15px;
+  min-width: 350px;
+  max-width: 500px;
+  position: relative;
+  z-index: 1001;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-content h2 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 1.5em;
+  padding-right: 20px;
+}
+
+.modal-content h4 {
+  color: #666;
+  margin: 0 0 20px 0;
+  font-weight: normal;
+  line-height: 1.5;
+}
+
+.modal-content p {
+  margin: 10px 0;
+  color: #555;
+  font-size: 0.95em;
+  display: flex;
+  align-items: center;
+}
+
+.modal-content p::before {
+  content: '•';
+  margin-right: 8px;
+  color: #A6E3E9;
+}
+
+.close-btn {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.close-btn:hover {
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+.modal-content button {
+  padding: 8px 16px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.2s ease;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.modal-content button:first-of-type {
+  background-color: #A6E3E9;
+  color: white;
+}
+
+.modal-content button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content button:active {
+  transform: translateY(0);
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 25px;
+  gap: 10px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  margin-left: 8px;
+}
+
+.status-complete {
+  background-color: #E8F6F3;
+  color: #2ECC71;
+}
+
+.status-incomplete {
+  background-color: #FEF5E7;
+  color: #F39C12;
+}
+
+.kakao-share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #FEE500 !important;
+  color: #000000 !important;
+  border: none;
+  padding: 8px 16px !important;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.kakao-share-btn:hover {
+  background-color: #FDD835 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(254, 229, 0, 0.3);
+}
+
+.kakao-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* 모바일 대응 */
+@media (max-width: 520px) {
+  .modal-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .kakao-share-btn {
+    width: 100%;
+  }
+}
+
+
+
+.toggle-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.toggle-button:hover {
+  background-color: #0056b3;
+}
+
+.dark-mode {
+  background-color: #333;
+  color: #f4f4f9;
+}
+
+.light-mode {
+  background-color: #f4f4f9;
+  color: #333;
+}
+
+.dark-mode .calendar-header h2 {
+  color: #ffffff;
+}
+
+/* 다크 모드에서 오늘의 일정 섹션 색상 유지 */
+.dark-mode .today-schedule h3,
+.dark-mode .selected-date-schedule h3,
+.dark-mode .upcoming-schedule h3 {
+  color: #333; /* 다크 모드에서도 동일한 색상 유지 */
+}
+
+/* 오늘의 일정 항목 li 색상 유지 */
+.dark-mode .today-schedule li,
+.dark-mode .selected-date-schedule li,
+.dark-mode .upcoming-schedule li {
+  color: #333; /* 다크 모드에서도 동일한 색상 유지 */
+}
+
+/* 다크 모드에서 캘린더 배경색 변경 */
+.dark-mode .calendar-container {
+  background-color: #1a1a1a; /* 다크 모드 배경색 */
+  color: #f4f4f9; /* 다크 모드 글자색 */
+}
+
+/* 오늘의 일정 섹션 스타일 */
+.today-schedule h3,
+.selected-date-schedule h3,
+.upcoming-schedule h3 {
+  margin: 0 0 3px 0;
+  height: 20px;
+  line-height: 20px;
+  font-size: 1em;
+  color: #333; /* 기본 글씨 색상 (라이트 모드) */
+}
+
+/* 다크 모드에서 오늘의 일정 섹션 색상 유지 */
+.dark-mode .today-schedule h3,
+.dark-mode .selected-date-schedule h3,
+.dark-mode .upcoming-schedule h3 {
+  color: #333; /* 다크 모드에서도 동일한 색상 유지 */
+}
+
+/* 오늘의 일정 항목 li 색상 유지 */
+.today-schedule li,
+.selected-date-schedule li,
+.upcoming-schedule li {
+  color: #333; /* 기본 글씨 색상 (라이트 모드) */
+}
+
+/* 다크 모드에서 오늘의 일정 항목 li 색상 유지 */
+.dark-mode .today-schedule li,
+.dark-mode .selected-date-schedule li,
+.dark-mode .upcoming-schedule li {
+  color: #333; /* 다크 모드에서도 동일한 색상 유지 */
+}
+
+/* react-calendar 배경색 설정 */
+.react-calendar {
+  background-color: white; /* 기본 배경색 (라이트 모드) */
+}
+
+/* 다크 모드에서 react-calendar 배경색 변경 */
+.dark-mode .react-calendar {
+  background-color: #1a1a1a; /* 다크 모드 배경색 */
+  color: #f4f4f9; /* 다크 모드 글자색 */
+}
+
+/* 다크 모드에서 react-calendar 타일 날짜 색상 */
+.dark-mode .react-calendar__tile {
+  color: #f4f4f9; /* 타일 내 날짜 색상 */
+}
+
+/* 주말 날짜 (빨간색) */
+.react-calendar__tile--weekend {
+  color: red;
+}
+
+/* 전달일(이전/다음 달 날짜) 색상 (회색) */
+.react-calendar__tile--neighboringMonth {
+  color: gray;
+}
+
+/* 오늘의 일정 항목 li 스타일 */
+.today-schedule li,
+.selected-date-schedule li,
+.upcoming-schedule li {
+  color: #333; /* 기본 글씨 색상 */
+}
+
+/* 다크 모드에서도 일정 항목 li 색상 유지 */
+.dark-mode .today-schedule li,
+.dark-mode .selected-date-schedule li,
+.dark-mode .upcoming-schedule li {
+  color: #333;
+}

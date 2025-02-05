@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // 날짜 선택기 CSS
-import './createTodo.css';
+import '../../styles/createTodo.css';
 
 const EditTodoPage = () => {
   const location = useLocation();
@@ -141,10 +141,11 @@ const EditTodoPage = () => {
             ~ {endDate.toLocaleString()}</p>
       </div>
       <div className='btnContainer'>
-        <button onClick={handleUpdate}>일정 수정</button>
-        <button onClick={handleCancel}>취소</button>
+        <button onClick={handleUpdate} className='edit-todo-btn'>일정 수정</button>
+        <button onClick={handleCancel} className='cancel-btn'>취소</button>
       </div>
     </div>
+
   );
 };
 
