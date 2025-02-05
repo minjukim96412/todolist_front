@@ -1,6 +1,6 @@
 [build]
   command = "cd todolist && npm run build"
-  publish = "todolist_front/todolist/build"
+  publish = "todolist/build"
 
 [[redirects]]
   from = "/*"
