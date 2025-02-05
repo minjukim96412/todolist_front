@@ -33,7 +33,7 @@ const CreateTodoPage = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post('http://localhost:8888/api/todos', {
+      await axios.post('http://localhost:8888/api/todos', {
         memId: user.memId,
         title: todoTitle.trim(),
         content: todoContent.trim(),
