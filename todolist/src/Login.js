@@ -153,21 +153,26 @@ const LoginPage = () => {
 
   // Kakao SDK 로드
   useEffect(() => {
-    if (!window.Kakao) {
-      const script = document.createElement('script');
-      script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
-      script.async = true;
-      script.onload = () => {
-        if (window.Kakao) {
-          window.Kakao.init(process.env.REACT_APP_KAKAO_KEY);
-        }
-      };
-      document.body.appendChild(script);
-
-      return () => {
-        document.body.removeChild(script);
-      };
-    }
+    const initializeKakao = () => {
+      if (!window.Kakao) {
+        const script = document.createElement('script');
+        script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
+        script.async = true;
+        script.onload = () => {
+          if (window.Kakao && process.env.REACT_APP_KAKAO_KEY) {
+            window.Kakao.init(process.env.REACT_APP_KAKAO_KEY);
+          } else {
+            console.error('Kakao SDK 초기화 실패');
+          }
+        };
+        document.body.appendChild(script);
+        return () => {
+          document.body.removeChild(script);
+        };
+      }
+    };
+  
+    initializeKakao();
   }, []);
 
   return (
