@@ -1,5 +1,5 @@
 [build]
-  command = "cd todolist_front/todolist && npm run build"
+  command = "cd todolist && npm run build"
   publish = "todolist_front/todolist/build"
 
 [[redirects]]
