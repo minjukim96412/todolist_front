@@ -153,26 +153,28 @@ const LoginPage = () => {
 
   // Kakao SDK 로드
   useEffect(() => {
-    const initializeKakao = () => {
-      if (!window.Kakao) {
-        const script = document.createElement('script');
-        script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
-        script.async = true;
-        script.onload = () => {
-          if (window.Kakao && window.ENV.REACT_APP_KAKAO_KEY) {
-            window.Kakao.init(window.ENV.REACT_APP_KAKAO_KEY);
-          } else {
-            console.error('Kakao SDK 초기화 실패');
-          }
-        };
-        document.body.appendChild(script);
-        return () => {
-          document.body.removeChild(script);
-        };
+    const fetchConfig = async () => {
+      try {
+        const response = await axios.get('http://localhost:8888/api/config');
+        const config = response.data;
+        
+        if (!window.Kakao) {
+          const script = document.createElement('script');
+          script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
+          script.async = true;
+          script.onload = () => {
+            if (window.Kakao && config.KAKAO_KEY) {
+              window.Kakao.init(config.KAKAO_KEY);
+            }
+          };
+          document.body.appendChild(script);
+        }
+      } catch (error) {
+        console.error('설정을 가져오는데 실패했습니다:', error);
       }
     };
   
-    initializeKakao();
+    fetchConfig();
   }, []);
 
   return (
