@@ -7,7 +7,7 @@ import CreateTodoPage from './CreateTodo';
 import EditTodoPage from './EditTodo';
 function App() {
   return (
-    <GoogleOAuthProvider clientId="351834792305-2adccofjnvfao16qouvvht123u9djg8e.apps.googleusercontent.com"> {/* GoogleOAuthProvider로 감싸기 */}
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
       <Router>
         <Routes>
           <Route path="/" element={<LoginPage />} /> {/* 로그인 페이지 경로 설정 */}
