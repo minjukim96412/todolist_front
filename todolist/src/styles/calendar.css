@@ -112,7 +112,16 @@ button:disabled {
   font-weight: bold;
   font-size: 0.9em;
   color: #666;
+  text-decoration: none !important;
+  border: none;
+  margin-bottom: 20px;
 }
+
+.react-calendar__month-view__weekdays abbr {
+  text-decoration: none !important;
+}
+
+
 
 .react-calendar__month-view__weekdays__weekday {
   padding: 8px;
@@ -137,7 +146,6 @@ button:disabled {
 
 .react-calendar__tile--active {
   background: #A6E3E9 !important;
-  color: white !important;
 }
 
 .react-calendar__tile:hover {
@@ -152,9 +160,7 @@ button:disabled {
   padding: 8px !important;
 }
 
-.react-calendar__month-view__days__day--weekend {
-  color: #FF6B6B;
-}
+
 
 .react-calendar__month-view__days__day--neighboringMonth {
   color: #ccc !important;
@@ -998,15 +1004,13 @@ html {
   color: #f4f4f9; /* 타일 내 날짜 색상 */
 }
 
-/* 주말 날짜 (빨간색) */
-.react-calendar__tile--weekend {
-  color: red;
-}
+
 
 /* 전달일(이전/다음 달 날짜) 색상 (회색) */
-.react-calendar__tile--neighboringMonth {
+.dark-mode .react-calendar__tile--neighboringMonth {
   color: gray;
 }
+
 
 /* 오늘의 일정 항목 li 스타일 */
 .today-schedule li,
@@ -1019,5 +1023,116 @@ html {
 .dark-mode .today-schedule li,
 .dark-mode .selected-date-schedule li,
 .dark-mode .upcoming-schedule li {
+  color: #333;
+}
+
+.react-calendar__month-view__days__day--weekend,
+.dark-mode .react-calendar__month-view__days__day--weekend {
+  color: #FF6B6B;
+}
+
+.dark-mode .react-calendar__navigation button:enabled:hover,
+.dark-mode .react-calendar__navigation button:enabled:focus {
+  background-color: #7d7a7a;
+  border-radius: 4px;
+}
+
+.dark-mode .react-calendar__tile:hover {
+  background-color: #7d7a7a !important;
+}
+
+.dark-mode .calendar-wrapper {
+  background-color: #333 !important;
+}
+
+.dark-mode .react-calendar__navigation button {
+  color: #f8f5f5 !important;
+}
+
+.dark-mode .react-calendar__month-view__weekdays {
+  color: #A6E3E9 !important;
+}
+
+.dark-mode .react-calendar__month-view__days__day--neighboringMonth {
+  color: #999898 !important;
+}
+
+.past-todos-alert {
+  position: fixed;  /* 📌 화면에 고정 */
+  bottom: 20px;     /* 📌 화면 아래쪽에서 20px 위 */
+  left: 20px;       /* 📌 화면 왼쪽에서 20px 오른쪽 */
+  background-color: rgba(255, 69, 58, 0.9); /* 🔴 반투명한 빨간색 배경 */
+  color: #333;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000; /* 📌 다른 요소보다 위에 배치 */
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* 🚀 알림창 애니메이션 효과 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px); /* 위로 이동하며 등장 */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.past-todos-alert ul {
+  list-style-type: none; /* 기본 리스트 스타일 제거 */
+  padding: 0; /* 패딩 제거 */
+}
+
+.past-todos-alert li {
+  margin-bottom: 10px; /* 각 항목 아래 여백 */
+  padding: 10px; /* 항목 패딩 */
+  background-color: #fff; /* 흰색 배경 */
+  border: 1px solid #ddd; /* 경계선 색상 */
+  border-radius: 3px; /* 모서리 둥글게 */
+  display: block !important;
+}
+
+.past-todos-alert button {
+  margin-right: 10px; /* 버튼 사이 여백 */
+  padding: 5px 10px; /* 버튼 패딩 */
+  background-color: #007bff; /* 파란색 배경 */
+  color: white; /* 흰색 텍스트 */
+  border: none; /* 경계선 제거 */
+  border-radius: 3px; /* 모서리 둥글게 */
+  cursor: pointer; /* 커서 포인터로 변경 */
+  float: right;
+  margin: 20px;
+}
+
+.alert-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
+}
+
+.past-todos-alert button:hover {
+  background-color: #0056b3; /* 버튼 호버 시 색상 변경 */
+}
+
+.alert-list-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.close-alert-btn {
+  position: relative;
+  float: right;
+}
+
+
+.dark-mode .react-calendar__tile--active,
+
+.dark-mode .react-calendar__tile--now {
   color: #333;
 }

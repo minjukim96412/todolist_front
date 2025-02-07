@@ -28,9 +28,13 @@ export const authAPI = {
 
 // TODO 관련 API
 export const todoAPI = {
+
+  getTodo: (todoId) => 
+    api.get(`${API_ENDPOINTS.TODO.BASE}/${todoId}`),
+
   getCalendarTodos: (memId) => 
     api.get(API_ENDPOINTS.TODO.CALENDAR(memId)),
-    
+
   updateTodoStatus: (todoId, completeYn) => 
     api.patch(`${API_ENDPOINTS.TODO.BASE}/${todoId}`, { completeYn }),
     
@@ -38,10 +42,14 @@ export const todoAPI = {
     api.delete(`${API_ENDPOINTS.TODO.BASE}/${todoId}`),
 
   createTodo: (todoData) =>
-    api.post(API_ENDPOINTS.TODO.BASE, todoData)
+    api.post(API_ENDPOINTS.TODO.BASE, todoData),
+
+  getCompletedTodos: (memId) =>
+    api.get(API_ENDPOINTS.TODO.COMPLETED(memId))
 };
 
 // 설정 관련 API
+
 export const configAPI = {
   getConfig: () => axios.get(`${API_CONFIG.BASE_URL}/config`),
 };
@@ -49,5 +57,5 @@ export const configAPI = {
 // 사용자 관련 API
 export const userAPI = {
   updateNickname: (memId, nickname) =>
-    api.patch(`${API_ENDPOINTS.USER.BASE}/${memId}/nickname`, { nickname })
+    api.patch(API_ENDPOINTS.LOGIN.UPDATE_NICKNAME(memId), { nickname })
 }; 

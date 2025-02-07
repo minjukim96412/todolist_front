@@ -4,6 +4,7 @@ import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // 날짜 선택기 CSS
 import '../../styles/createTodo.css';
+import { todoAPI } from "../../services/api";
 
 const EditTodoPage = () => {
   const location = useLocation();
@@ -24,7 +25,7 @@ const EditTodoPage = () => {
   
     const fetchTodo = async () => {
       try {
-        const response = await axios.get(`http://localhost:8888/api/todos/${todoId}`);
+        const response = await todoAPI.getTodo(todoId);
         const { title, content, startDate, endDate } = response.data;
         setTodoTitle(title);
         setTodoContent(content);

@@ -17,6 +17,7 @@ const CalendarComponent = () => {
   const [showModal, setShowModal] = useState(false); // 모달 상태
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState(null); // 선택된 일정
+  const [pastTodos, setPastTodos] = useState([]); // 과거 일정
   const navigate = useNavigate();
   const user = JSON.parse(sessionStorage.getItem('user') || '{}');
   const [calendarData, setCalendarData] = useState({}); // 날짜별 todo 데이터
@@ -123,14 +124,21 @@ const CalendarComponent = () => {
       const today = new Date(now.getTime() + (9 * 60 * 60 * 1000));
       const todayStr = today.toISOString().split('T')[0];
       
-      // 오늘의 일정 필터링 (현재 시간 이후에 끝나는 일정만)
+      // 오늘의 일정 필터링
       const todayTodos = (data[todayStr] || [])
-        .filter(todo => new Date(todo.endDate) > now)
+        .filter(todo => new Date(todo.endDate) >= now) // 현재 시간 이후 또는 같은 시간에 끝나는 일정
         .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
-      
+
       setTodos(todayTodos);
+
+      // 과거 일정 필터링 (완료되지 않은 일정만)
+      const pastTodosList = (data[todayStr] || [])
+        .filter(todo => new Date(todo.endDate) < now && !todo.completeYn) // 현재 시간 이전에 끝나는 일정 중 완료되지 않은 일정
+        .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+      setPastTodos(pastTodosList); // 과거 일정 상태 업데이트
       
-      // 다가오는 일정 필터링 (현재 시간 이후에 시작하는 일정만)
+      // 다가오는 일정 필터링
       const upcoming = allTodosList
         .filter(todo => {
           const startTime = new Date(todo.startDate);
@@ -172,18 +180,30 @@ const CalendarComponent = () => {
   };
 
   // 완료 처리
-  const handleMarkAsComplete = async () => {
-    if (!selectedTodo) return;
-    
+  const handleMarkAsComplete = async (todoId) => {
+    const todoToComplete = allTodos.find(todo => todo.todoId === todoId);
+    if (!todoToComplete) return;
+
     try {
-      const updatedCompleteYn = !selectedTodo.completeYn;
-      await todoAPI.updateTodoStatus(selectedTodo.todoId, updatedCompleteYn);
-      
+      const updatedCompleteYn = !todoToComplete.completeYn;
+      await todoAPI.updateTodoStatus(todoToComplete.todoId, updatedCompleteYn);
+
+      // 완료된 일정 저장
+      if (updatedCompleteYn) {
+        const completedTodo = { ...todoToComplete, completeYn: true };
+        const existingCompletedTodos = JSON.parse(localStorage.getItem('completedTodos')) || [];
+        localStorage.setItem('completedTodos', JSON.stringify([...existingCompletedTodos, completedTodo]));
+      }
+
       setAllTodos(allTodos.map(todo => 
-        todo.todoId === selectedTodo.todoId ? { ...todo, completeYn: updatedCompleteYn } : todo
+        todo.todoId === todoToComplete.todoId ? { ...todo, completeYn: updatedCompleteYn } : todo
       ));
+
+      // 과거 일정에서 완료된 일정 제거
+      setPastTodos(pastTodos.filter(todo => todo.todoId !== todoToComplete.todoId));
+
       fetchAllTodos();
-      closeModal();
+      closeModal(); // 모달 닫기
     } catch (error) {
       alert('상태 변경에 실패했습니다.');
     }
@@ -218,6 +238,11 @@ const CalendarComponent = () => {
     setShowModal(true);
   };
 
+  // 완료된 일정 페이지로 이동
+  const handleCompletedTodos = () => {
+    navigate('/completed-todos'); 
+  };
+
   // 일정 삭제
   const handleDelete = async () => {
     if (!selectedTodo) return;
@@ -232,8 +257,8 @@ const CalendarComponent = () => {
   };
 
   // 일정 수정
-  const handleEdit = () => {
-    navigate('/edit-todo', { state: { todoId: selectedTodo.todoId } });
+  const handleEdit = (todoId) => {
+    navigate('/edit-todo', { state: { todoId } });
     closeModal();
   };
 
@@ -257,60 +282,128 @@ const CalendarComponent = () => {
     return colors[id % colors.length];
   };
 
+  // 특정 날짜의 모든 이벤트에 대한 행 할당
+  const calculateEventRows = (calendarData) => {
+    const rowIndexMap = new Map(); // { todoId: rowIndex }
+    const dateRowUsage = new Map(); // { 날짜: Set(row) } → 각 날짜별 사용 중인 줄 번호
+    
+    console.log("📌 일정 목록:", calendarData);
+  
+    // 🔹 모든 일정들을 정렬
+    const allEvents = Object.values(calendarData).flat();
+    
+    // ✅ completeYn이 false인 일정만 필터링
+    const filteredEvents = allEvents.filter(event => !event.completeYn);
+    
+    const sortedEvents = filteredEvents.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+  
+    sortedEvents.forEach(event => {
+      const todoId = event.todoId;
+      const startDate = event.startDate.split('T')[0];
+      const endDate = event.endDate.split('T')[0];
+  
+      // 🔹 일정이 걸쳐 있는 날짜 범위 구하기
+      let eventDates = [];
+      let currentDate = new Date(startDate);
+      while (currentDate <= new Date(endDate)) {
+        const dateStr = currentDate.toISOString().split('T')[0];
+        eventDates.push(dateStr);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+  
+      // 🔹 이미 row가 정해져 있으면 그대로 유지
+      if (rowIndexMap.has(todoId)) return;
+  
+      // ✅ **사용되지 않은 가장 낮은 row 찾기**
+      const usedRows = new Set();
+      eventDates.forEach(date => {
+        if (dateRowUsage.has(date)) {
+          dateRowUsage.get(date).forEach(row => usedRows.add(row));
+        }
+      });
+  
+      // ✅ `find()`를 사용하여 가장 낮은 빈 row 찾기
+      let row = 0;
+      while (usedRows.has(row)) {
+        row++;
+      }
+  
+      // 🔹 row를 할당하고, 각 날짜에서 사용 중인 row 기록
+      rowIndexMap.set(todoId, row);
+      eventDates.forEach(date => {
+        if (!dateRowUsage.has(date)) {
+          dateRowUsage.set(date, new Set());
+        }
+        dateRowUsage.get(date).add(row);
+      });
+  
+      console.log(`✅ 일정 ${todoId}: ${startDate}~${endDate} → Row ${row}`);
+    });
+  
+    return rowIndexMap;
+  };
+  
+  
   const tileContent = ({ date, view }) => {
     if (view === 'month') {
       const koreaDate = new Date(date.getTime() + (9 * 60 * 60 * 1000));
       const currentDate = koreaDate.toISOString().split('T')[0];
-      
-      const todosForDate = [];
-      if (calendarData[currentDate]) {
-        const todoIdsForDate = new Set(calendarData[currentDate].map(todo => todo.todoId));
-        allTodos.forEach(todo => {
-          if (todoIdsForDate.has(todo.todoId)) {
-            todosForDate.push(todo);
-          }
-        });
 
-        todosForDate.sort((a, b) => {
-          const aStart = new Date(a.startDate);
-          const bStart = new Date(b.startDate);
-          const aEnd = new Date(a.endDate);
-          const bEnd = new Date(b.endDate);
-
-          if (aStart.getTime() === bStart.getTime()) {
-            return bEnd.getTime() - aEnd.getTime();
-          }
-          return aStart.getTime() - bStart.getTime();
-        });
+      if (!calendarData[currentDate]) {
+        return null;
       }
+
+      const eventsForDate = calendarData[currentDate];
+      const eventRows = calculateEventRows(calendarData);
 
       return (
         <div className="tile-content">
-          {todosForDate.map((todo, index) => (
-            <div
-              key={`${todo.todoId}-${index}`}
-              className="todo-line continue-both"
-              style={{
-                backgroundColor: getRandomColor(todo.todoId),
-                top: `${60 + (index * 15)}%`,
-                height: '4px',
-                cursor: 'pointer',
-                position: 'relative',
-                zIndex: 2
-              }}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                openModal(todo);
-              }}
-              onMouseDown={(e) => e.stopPropagation()}
-            />
-          ))}
+          {eventsForDate.map(event => {
+            // completeYn이 true인 경우 렌더링하지 않음
+            if (event.completeYn) return null;
+
+            const startDate = new Date(event.startDate);
+            const row = eventRows.get(event.todoId); // row 값 가져오기
+
+            // row 값이 없으면 렌더링하지 않음
+            if (row === undefined) return null;
+
+            const isMultiDay = startDate.toISOString().split('T')[0] !== new Date(event.endDate).toISOString().split('T')[0];
+            const isStart = startDate.toISOString().split('T')[0] === currentDate;
+            const isEnd = new Date(event.endDate).toISOString().split('T')[0] === currentDate;
+
+            return (
+              <div
+                key={`${event.todoId}-${currentDate}`}
+                className="todo-line"
+                style={{
+                  position: 'absolute',
+                  backgroundColor: getRandomColor(event.todoId),
+                  top: `${60 + (row * 15)}%`,
+                  left: isStart ? '2px' : '-2px',
+                  right: isEnd ? '2px' : '-2px',
+                  height: '4px',
+                  cursor: 'pointer',
+                  zIndex: isMultiDay ? 1 : 2,
+                  borderRadius: `${isStart ? '2px' : '0'} ${isEnd ? '2px' : '0'} ${isEnd ? '2px' : '0'} ${isStart ? '2px' : '0'}`,
+                  opacity: event.completeYn ? 0.5 : 1
+                }}
+                title={`${event.title} - 시작 시간: ${startDate.toLocaleString('ko-KR')}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  openModal(event);
+                }}
+                onMouseDown={(e) => e.stopPropagation()}
+              />
+            );
+          })}
         </div>
       );
     }
     return null;
   };
+  
 
   const handleAddTodo = () => {
     // 선택된 날짜가 있으면 해당 날짜의 시작시간을 오전 9시로, 종료시간을 오후 6시로 설정
@@ -412,6 +505,41 @@ const CalendarComponent = () => {
     setIsDarkMode(savedMode);
   }, []);
 
+  useEffect(() => {
+    document.body.className = isDarkMode ? 'dark-mode' : 'light-mode';
+  }, [isDarkMode]);
+
+  // 알림창 표시
+  const renderPastTodosAlert = () => {
+    if (pastTodos.length > 0) {
+      return (
+        <div className="past-todos-alert">
+          <div className="alert-content">
+            <h3>일정이 종료되었습니다:</h3>
+            <button className="close-alert-btn" onClick={() => setPastTodos([])}>닫기</button>
+          </div>
+          <ul>
+            {pastTodos.map(todo => (
+              <div className="alert-list-content" key={todo.todoId}>
+                <li>
+                  <strong>제목:</strong> {todo.title} <br />
+                  <strong>내용:</strong> {todo.content} <br />
+                  <strong>종료 시간:</strong> {new Date(todo.endDate).toLocaleString('ko-KR')}
+                  <div>
+                    <button onClick={() => handleEdit(todo.todoId)}>일정 수정</button>
+                    <button onClick={() => handleMarkAsComplete(todo.todoId)}>완료 처리</button>
+                  </div>
+                </li>
+              </div>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div className={isDarkMode ? 'dark-mode' : 'light-mode'}>
       <header className="calendar-header">
@@ -499,10 +627,13 @@ const CalendarComponent = () => {
               </ul>
             )}
           </div>
-
-          <button onClick={handleAddTodo}>일정 추가</button>
+          <div className='calendar-buttons'>
+            <button onClick={handleCompletedTodos}>완료된 일정 보기</button>
+            <button onClick={handleAddTodo}>일정 추가</button>
+          </div>
         </div>
       </div>
+
 
       {showDeleteConfirm && (
         <div className="modal">
@@ -535,7 +666,7 @@ const CalendarComponent = () => {
               {selectedTodo.completeYn === true && (
                 <button onClick={handleMarkAsComplete}>미완료로 변경</button>
               )}
-              <button onClick={handleEdit}>수정</button>
+              <button onClick={() => handleEdit(selectedTodo.todoId)}>수정</button>
               <button onClick={openDeleteConfirm}>삭제</button>
               <button onClick={shareToKakao} className="kakao-share-btn">
                 <img 
@@ -549,7 +680,7 @@ const CalendarComponent = () => {
           </div>
         </div>
       )}
-
+      {renderPastTodosAlert()}
       {/* 닉네임 수정 모달 */}
       {showNicknameModal && (
         <div className="modal">

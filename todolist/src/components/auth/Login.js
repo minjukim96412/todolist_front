@@ -13,6 +13,52 @@ const LoginPage = ({ kakaoClientId }) => {
   const [nickname, setNickname] = useState(''); // 닉네임 입력 값
   const navigate = useNavigate(); // 페이지 이동 함수
 
+  // Kakao SDK 로드
+  useEffect((kakaoKey) => {
+    console.log("📌 Kakao SDK 로드 시작");
+    console.log("📌 Kakao Key:", kakaoKey); // ✅ Client ID 확인
+    if (!kakaoClientId) {
+      console.error("❌ Kakao Client ID가 설정되지 않았습니다.");
+      return; // ✅ Client ID가 없으면 초기화 실행 안 함
+    }
+  
+    if (!window.Kakao) {
+      console.log("📌 Kakao SDK가 존재하지 않음 → 스크립트 추가");
+  
+      const script = document.createElement("script");
+      script.src = "https://developers.kakao.com/sdk/js/kakao.js"; 
+      script.async = true;
+      script.onload = () => {
+        console.log("✅ Kakao SDK 스크립트 로드 완료");
+  
+        if (window.Kakao) {
+          console.log("📌 Kakao 객체 존재, 초기화 상태:", window.Kakao.isInitialized());
+  
+          if (!window.Kakao.isInitialized()) {
+            window.Kakao.init(kakaoClientId);
+            console.log("✅ Kakao SDK 초기화 완료:", window.Kakao.isInitialized());
+          } else {
+            console.warn("❗ Kakao SDK가 이미 초기화됨");
+          }
+        } else {
+          console.error("❌ Kakao 객체가 존재하지 않습니다.");
+        }
+      };
+  
+      document.body.appendChild(script);
+    } else {
+      console.log("📌 Kakao SDK 이미 로드됨, 초기화 상태:", window.Kakao.isInitialized());
+  
+      if (!window.Kakao.isInitialized()) {
+        window.Kakao.init(kakaoClientId);
+        console.log("✅ Kakao SDK 초기화 완료:", window.Kakao.isInitialized());
+      } else {
+        console.warn("❗ Kakao SDK가 이미 초기화됨");
+      }
+    }
+  }, [kakaoClientId]);
+  
+
   // 세션에 유저 정보가 있으면 캘린더 페이지로 리다이렉트
   useEffect(() => {
     const user = sessionStorage.getItem('user');
@@ -62,11 +108,11 @@ const LoginPage = ({ kakaoClientId }) => {
   
   // Kakao 로그인 성공 핸들러
   const handleKakaoLoginSuccess = async () => {
+    console.log(window.Kakao);
     if (!window.Kakao || !window.Kakao.isInitialized()) {
       alert('Kakao SDK가 초기화되지 않았습니다.');
       return;
     }
-
     window.Kakao.Auth.login({
       success: async (response) => {
         const token = response.access_token;
@@ -139,22 +185,7 @@ const LoginPage = ({ kakaoClientId }) => {
     }
   };
 
-  // Kakao SDK 로드
-  useEffect(() => {
-    if (!window.Kakao) {
-      const script = document.createElement('script');
-      script.src = API_CONFIG.KAKAO_SDK_URL;
-      script.async = true;
-      script.onload = () => {
-        if (window.Kakao && kakaoClientId) {
-          window.Kakao.init(kakaoClientId);
-        }
-      };
-      document.body.appendChild(script);
-    } else if (kakaoClientId) {
-      window.Kakao.init(kakaoClientId);
-    }
-  }, [kakaoClientId]);
+  
 
   return (
     <div className="login-container">

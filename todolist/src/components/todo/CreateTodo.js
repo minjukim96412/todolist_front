@@ -123,7 +123,7 @@ const CreateTodoPage = () => {
       </div>
 
       {error && <p className="error-message" style={{ color: 'red' }}>{error}</p>}
-
+      <div className='btnContainer'>
       <button 
         onClick={handleSubmit} 
         disabled={isSubmitting}
@@ -131,8 +131,11 @@ const CreateTodoPage = () => {
       >
         {isSubmitting ? '추가 중...' : '일정 추가'}
       </button>
+      <button onClick={() => navigate(-1)} className='cancel-btn'>취소</button>
+      </div>
     </div>
   );
 };
+
 
 export default CreateTodoPage;
