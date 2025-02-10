@@ -1,136 +1,126 @@
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+/* styles/login.css */
 
-/* 로그인 페이지 컨테이너 */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #FFE2E2 !important; /* 배경색 */
+}
+
 .login-container {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh; /* 전체 화면을 채우도록 변경 */
-  margin-top: 0;
-  background-color: #f4f4f4; /* 배경색을 조금 더 부드럽게 변경 */
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  padding: 40px 20px; /* 상단 여백을 늘려서 더 여유롭게 배치 */
-  box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  height: 100vh; /* 화면 전체 높이 */
+  width: 100vw; /* 화면 전체 너비 */
+  padding: 20px;
+  position: relative; /* 자식 요소의 절대 위치를 위한 설정 */
 }
 
-/* 로그인 페이지 제목 */
-.login-container h1 {
-  font-size: 48px; /* 더 큰 제목 크기 */
-  font-weight: 700; /* Pretendard 폰트 굵기 조정 */
-  color: #333;
-  margin-bottom: 10px;
-  text-align: center;
-  letter-spacing: -0.5px; /* Pretendard에 맞게 자간 조정 */
+h1 {
+  color: #FF6B6B; /* 제목 색상 */
+  font-size: 2.5em; /* 제목 크기 */
+  margin-bottom: 10px; /* 제목과 버튼 간의 간격 */
 }
 
-/* 서브 제목 */
-.login-container h2 {
-  font-size: 28px; /* 좀 더 작은 크기 */
-  font-weight: 500; /* Pretendard 폰트 굵기 조정 */
-  color: #555;
-  margin-bottom: 40px;
-  text-align: center;
-  letter-spacing: -0.3px; /* Pretendard에 맞게 자간 조정 */
+h2 {
+  color: #333; /* 서브 제목 색상 */
+  font-size: 1.5em; /* 서브 제목 크기 */
+  margin-bottom: 30px; /* 서브 제목과 버튼 간의 간격 */
 }
 
-/* 로그인 버튼들 컨테이너 */
-.login-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px; /* 버튼들 사이에 여백 추가 */
-}
-
-/* 카카오 로그인 버튼 */
 .kakao-login-button {
-  display: flex;
-  align-items: center;
-  background-color: #fee500;
-  color: rgba(0, 0, 0, 0.85);
+  background-color: #FEE500; /* 카카오 버튼 배경색 */
   border: none;
   border-radius: 5px;
+  padding: 10px 20px;
   cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-  height: 40px;
-  justify-content: center;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
+  margin-top: 20px; /* 버튼 간의 간격 */
 }
 
 .kakao-login-button:hover {
-  background-color: #ffcc00; /* Hover 시 색상 살짝 변하도록 설정 */
+  background-color: #FFD700; /* 호버 시 색상 변경 */
 }
 
-/* 닉네임 입력창 스타일 */
 .nickname-modal {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   background-color: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 300px;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  width: 300px; /* 모달 너비 */
 }
 
-/* 닉네임 입력창 제목 */
 .nickname-modal h3 {
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 20px;
-  font-weight: 600;
+  margin-bottom: 15px; /* 제목과 입력 필드 간의 간격 */
 }
 
-/* 닉네임 입력 필드 */
-input[type="text"] {
+.nickname-modal input {
   padding: 10px;
-  font-size: 16px;
-  width: 100%;
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin-bottom: 20px;
-  transition: border 0.3s ease;
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-weight: 400; /* Pretendard 폰트 굵기 조정 */
+  margin-bottom: 10px; /* 입력 필드와 버튼 간의 간격 */
+  width: 100%; /* 입력 필드 너비 */
 }
 
-input[type="text"]:focus {
-  border-color: #4CAF50;
-  outline: none;
-}
-
-/* 취소 버튼 스타일 */
-button.cancel {
-  background-color: #f44336;
-  color: white;
-  padding: 8px 16px;
+.nickname-modal button {
+  background-color: #FF6B6B; /* 버튼 배경색 */
+  color: white; /* 버튼 텍스트 색상 */
   border: none;
   border-radius: 5px;
+  padding: 10px 20px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-button.cancel:hover {
-  background-color: #d32f2f;
-  transition: background-color 0.3s ease;
+.nickname-modal button.cancel {
+  background-color: #ccc; /* 취소 버튼 색상 */
 }
 
-/* 로그인 버튼들 */
-button {
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: 600; /* Pretendard 폰트 굵기 조정 */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin: 10px;
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+.nickname-modal button:hover {
+  background-color: #FF4C4C; /* 호버 시 색상 변경 */
+}
+
+.login-container h1,
+.login-container h2 {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* 텍스트 그림자 추가 */
+}
+
+.kakao-login-button img {
+  vertical-align: middle; /* 이미지 정렬 */
+  margin-right: 8px; /* 이미지와 텍스트 간의 간격 */
+}
+
+.smile-gif {
+  width: 100px; /* 이미지 너비 */
+  height: 100px; /* 이미지 높이 */
+  margin-bottom: 20px; /* 이미지와 텍스트 간의 간격 */
+}
+
+.img-container-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.img-container-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.star3-gif {
+  width: 200px; /* 이미지 너비 */
+  height: 200px; /* 이미지 높이 */
+  margin-bottom: 20px; /* 이미지와 텍스트 간의 간격 */
+}
+.heartwing-gif {
+  width: 200px; /* 이미지 너비 */
+  height: 100px; /* 이미지 높이 */
+  margin-bottom: 20px; /* 이미지와 텍스트 간의 간격 */
 }

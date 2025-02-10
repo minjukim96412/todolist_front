@@ -35,61 +35,56 @@ const CalendarComponent = () => {
   }, [user, navigate]);
 
   // Kakao SDK 로드 및 초기화
-  useEffect(() => {
-    const loadKakaoSDK = async () => {
+// Kakao SDK 로드 및 초기화
+useEffect(() => {
+  const loadKakaoSDK = async () => {
       try {
-        // 백엔드에서 카카오 키 가져오기
-        const response = await configAPI.getConfig();
-        const key = response.data.KAKAO_KEY;  // 백엔드 응답 구조에 맞게 수정
-        
-        if (!key) {
-          console.error('Kakao key not found');
-          return;
-        }
+          const response = await configAPI.getConfig();
+          const key = response.data.KAKAO_KEY;
 
-        setKakaoKey(key);
+          if (!key) {
+              console.error('Kakao key not found');
+              return;
+          }
 
+          setKakaoKey(key);
 
-        // Kakao SDK 스크립트가 이미 있는지 확인
-        const existingScript = document.querySelector('script[src="https://developers.kakao.com/sdk/js/kakao.min.js"]');
-        
-        if (!existingScript) {
-          // Kakao SDK 스크립트 로드
-          const script = document.createElement('script');
-          script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
-          script.async = true;
-          
-          script.onload = () => {
-            if (window.Kakao && !window.Kakao.isInitialized()) {
+          const existingScript = document.querySelector('script[src="https://developers.kakao.com/sdk/js/kakao.min.js"]');
+
+          if (!existingScript) {
+              const script = document.createElement('script');
+              script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
+              script.async = true;
+
+              script.onload = () => {
+                  if (window.Kakao && !window.Kakao.isInitialized()) {
+                      window.Kakao.init(key);
+                      console.log('Kakao SDK initialized:', window.Kakao.isInitialized());
+                  }
+              };
+
+              document.head.appendChild(script);
+          } else if (window.Kakao && !window.Kakao.isInitialized()) {
               window.Kakao.init(key);
               console.log('Kakao SDK initialized:', window.Kakao.isInitialized());
-            }
-          };
-
-          document.head.appendChild(script);
-        } else if (window.Kakao && !window.Kakao.isInitialized()) {
-          // 스크립트는 있지만 초기화가 안된 경우
-          window.Kakao.init(key);
-          console.log('Kakao SDK initialized:', window.Kakao.isInitialized());
-        }
+          }
       } catch (error) {
-        console.error('Failed to load Kakao SDK:', error);
-        console.error('Error details:', {
-          message: error.message,
-          response: error.response
-        });
+          console.error('Failed to load Kakao SDK:', error);
       }
-    };
+  };
 
-    loadKakaoSDK();
+  if (user.memId) {
+      loadKakaoSDK();
+  } else {
+      console.log('User is not logged in, skipping Kakao SDK initialization.');
+  }
 
-    // 컴포넌트 언마운트 시 cleanup
-    return () => {
+  return () => {
       if (window.Kakao?.cleanup) {
-        window.Kakao.cleanup();
+          window.Kakao.cleanup();
       }
-    };
-  }, []);
+  };
+}, [user.memId]);
 
   const formatDate = (date) => {
     const d = new Date(date);
@@ -180,29 +175,28 @@ const CalendarComponent = () => {
   };
 
   // 완료 처리
-  const handleMarkAsComplete = async (todoId) => {
-    const todoToComplete = allTodos.find(todo => todo.todoId === todoId);
-    if (!todoToComplete) return;
+  const handleMarkAsComplete = async () => {
+    if (!selectedTodo) return; // selectedTodo가 null인 경우 함수 종료
 
     try {
-      const updatedCompleteYn = !todoToComplete.completeYn;
-      await todoAPI.updateTodoStatus(todoToComplete.todoId, updatedCompleteYn);
+      const updatedCompleteYn = !selectedTodo.completeYn; // 현재 상태 반전
+      await todoAPI.updateTodoStatus(selectedTodo.todoId, updatedCompleteYn); // API 호출
 
       // 완료된 일정 저장
       if (updatedCompleteYn) {
-        const completedTodo = { ...todoToComplete, completeYn: true };
+        const completedTodo = { ...selectedTodo, completeYn: true };
         const existingCompletedTodos = JSON.parse(localStorage.getItem('completedTodos')) || [];
         localStorage.setItem('completedTodos', JSON.stringify([...existingCompletedTodos, completedTodo]));
       }
 
       setAllTodos(allTodos.map(todo => 
-        todo.todoId === todoToComplete.todoId ? { ...todo, completeYn: updatedCompleteYn } : todo
+        todo.todoId === selectedTodo.todoId ? { ...todo, completeYn: updatedCompleteYn } : todo
       ));
 
       // 과거 일정에서 완료된 일정 제거
-      setPastTodos(pastTodos.filter(todo => todo.todoId !== todoToComplete.todoId));
+      setPastTodos(pastTodos.filter(todo => todo.todoId !== selectedTodo.todoId));
 
-      fetchAllTodos();
+      fetchAllTodos(); // 모든 일정 다시 가져오기
       closeModal(); // 모달 닫기
     } catch (error) {
       alert('상태 변경에 실패했습니다.');
@@ -287,7 +281,7 @@ const CalendarComponent = () => {
     const rowIndexMap = new Map(); // { todoId: rowIndex }
     const dateRowUsage = new Map(); // { 날짜: Set(row) } → 각 날짜별 사용 중인 줄 번호
     
-    console.log("📌 일정 목록:", calendarData);
+    //("📌 일정 목록:", calendarData);
   
     // 🔹 모든 일정들을 정렬
     const allEvents = Object.values(calendarData).flat();
@@ -337,7 +331,7 @@ const CalendarComponent = () => {
         dateRowUsage.get(date).add(row);
       });
   
-      console.log(`✅ 일정 ${todoId}: ${startDate}~${endDate} → Row ${row}`);
+      //console.log(`✅ 일정 ${todoId}: ${startDate}~${endDate} → Row ${row}`);
     });
   
     return rowIndexMap;
@@ -527,7 +521,10 @@ const CalendarComponent = () => {
                   <strong>종료 시간:</strong> {new Date(todo.endDate).toLocaleString('ko-KR')}
                   <div>
                     <button onClick={() => handleEdit(todo.todoId)}>일정 수정</button>
-                    <button onClick={() => handleMarkAsComplete(todo.todoId)}>완료 처리</button>
+                    <button onClick={() => {
+                      setSelectedTodo(todo); // 선택된 일정 설정
+                      handleMarkAsComplete(); // 완료 처리 호출
+                    }}>완료 처리</button>
                   </div>
                 </li>
               </div>
@@ -537,6 +534,48 @@ const CalendarComponent = () => {
       );
     }
 
+    return null;
+  };
+
+  // 모달에서 완료 처리 버튼 클릭 시 호출
+  const renderModal = () => {
+    if (showModal && selectedTodo) {
+      return (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close-btn" onClick={closeModal}>×</span>
+            <h2>{selectedTodo.title}</h2>
+            <h4>{selectedTodo.content}</h4>
+            <p>시작: {formatDate(selectedTodo.startDate)}</p>
+            <p>종료: {formatDate(selectedTodo.endDate)}</p>
+            <p>
+              상태: 
+              <span className={`status-badge ${selectedTodo.completeYn ? 'status-complete' : 'status-incomplete'}`}>
+                {selectedTodo.completeYn ? '완료' : '진행 중'}
+              </span>
+            </p>
+            <div className="modal-buttons">
+              {selectedTodo.completeYn === false && (
+                <button onClick={handleMarkAsComplete}>완료 처리</button>
+              )}
+              {selectedTodo.completeYn === true && (
+                <button onClick={handleMarkAsComplete}>미완료로 변경</button>
+              )}
+              <button onClick={() => handleEdit(selectedTodo.todoId)}>수정</button>
+              <button onClick={openDeleteConfirm}>삭제</button>
+              <button onClick={shareToKakao} className="kakao-share-btn">
+                <img 
+                  src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_small.png"
+                  alt="카카오톡 공유하기"
+                  className="kakao-icon"
+                />
+                공유하기
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
     return null;
   };
 
@@ -645,41 +684,7 @@ const CalendarComponent = () => {
         </div>
       )}
 
-      {showModal && selectedTodo && (
-        <div className="modal">
-          <div className="modal-content">
-            <span className="close-btn" onClick={closeModal}>×</span>
-            <h2>{selectedTodo.title}</h2>
-            <h4>{selectedTodo.content}</h4>
-            <p>시작: {formatDate(selectedTodo.startDate)}</p>
-            <p>종료: {formatDate(selectedTodo.endDate)}</p>
-            <p>
-              상태: 
-              <span className={`status-badge ${selectedTodo.completeYn ? 'status-complete' : 'status-incomplete'}`}>
-                {selectedTodo.completeYn ? '완료' : '진행 중'}
-              </span>
-            </p>
-            <div className="modal-buttons">
-              {selectedTodo.completeYn === false && (
-                <button onClick={handleMarkAsComplete}>완료 처리</button>
-              )}
-              {selectedTodo.completeYn === true && (
-                <button onClick={handleMarkAsComplete}>미완료로 변경</button>
-              )}
-              <button onClick={() => handleEdit(selectedTodo.todoId)}>수정</button>
-              <button onClick={openDeleteConfirm}>삭제</button>
-              <button onClick={shareToKakao} className="kakao-share-btn">
-                <img 
-                  src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_small.png"
-                  alt="카카오톡 공유하기"
-                  className="kakao-icon"
-                />
-                공유하기
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {renderModal()}
       {renderPastTodosAlert()}
       {/* 닉네임 수정 모달 */}
       {showNicknameModal && (

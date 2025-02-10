@@ -1,71 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleLogin } from '@react-oauth/google'; // Google OAuth 컴포넌트
 import { useNavigate } from 'react-router-dom'; // 페이지 이동
-import '../../styles/login.css';  // .module.css 에서 일반 .css로 변경
+import '../../styles/login.css';  // 스타일 파일 추가
 import kakaoLogo from '../../assets/kakao_login.png'; // Kakao 로그인 버튼 이미지
+import smileGif from '../../assets/smile.gif'; // GIF 이미지 임포트
+import star3Gif from '../../assets/star3.gif'; // GIF 이미지 임포트
+import heartwingGif from '../../assets/heartwing.gif'; // GIF 이미지 임포트
 import { authAPI } from '../../services/api';
 
-import API_CONFIG from '../../utils/config';
 
-const LoginPage = ({ kakaoClientId }) => {
+const LoginPage = ({ kakaoKey }) => {
   const [isNicknameModalOpen, setNicknameModalOpen] = useState(false); // 닉네임 입력 모달 상태
   const [userInfo, setUserInfo] = useState(null); // 사용자 정보 저장
   const [nickname, setNickname] = useState(''); // 닉네임 입력 값
   const navigate = useNavigate(); // 페이지 이동 함수
 
-  // Kakao SDK 로드
-  useEffect((kakaoKey) => {
-    console.log("📌 Kakao SDK 로드 시작");
-    console.log("📌 Kakao Key:", kakaoKey); // ✅ Client ID 확인
-    if (!kakaoClientId) {
-      console.error("❌ Kakao Client ID가 설정되지 않았습니다.");
-      return; // ✅ Client ID가 없으면 초기화 실행 안 함
-    }
-  
-    if (!window.Kakao) {
-      console.log("📌 Kakao SDK가 존재하지 않음 → 스크립트 추가");
-  
-      const script = document.createElement("script");
-      script.src = "https://developers.kakao.com/sdk/js/kakao.js"; 
-      script.async = true;
-      script.onload = () => {
-        console.log("✅ Kakao SDK 스크립트 로드 완료");
-  
-        if (window.Kakao) {
-          console.log("📌 Kakao 객체 존재, 초기화 상태:", window.Kakao.isInitialized());
-  
-          if (!window.Kakao.isInitialized()) {
-            window.Kakao.init(kakaoClientId);
-            console.log("✅ Kakao SDK 초기화 완료:", window.Kakao.isInitialized());
-          } else {
-            console.warn("❗ Kakao SDK가 이미 초기화됨");
-          }
-        } else {
-          console.error("❌ Kakao 객체가 존재하지 않습니다.");
-        }
-      };
-  
-      document.body.appendChild(script);
-    } else {
-      console.log("📌 Kakao SDK 이미 로드됨, 초기화 상태:", window.Kakao.isInitialized());
-  
-      if (!window.Kakao.isInitialized()) {
-        window.Kakao.init(kakaoClientId);
-        console.log("✅ Kakao SDK 초기화 완료:", window.Kakao.isInitialized());
-      } else {
-        console.warn("❗ Kakao SDK가 이미 초기화됨");
-      }
-    }
-  }, [kakaoClientId]);
-  
-
-  // 세션에 유저 정보가 있으면 캘린더 페이지로 리다이렉트
+  // Kakao SDK 로드 및 초기화
   useEffect(() => {
+    const loadKakaoSDK = () => {
+      if (!window.Kakao) {
+        const script = document.createElement('script');
+        script.src = "https://developers.kakao.com/sdk/js/kakao.js";
+        script.async = true;
+        script.onload = () => {
+          if (window.Kakao && kakaoKey) {
+            window.Kakao.init(kakaoKey);
+          }
+        };
+        document.body.appendChild(script);
+      } else if (kakaoKey && !window.Kakao.isInitialized()) {
+        window.Kakao.init(kakaoKey);
+      }
+    };
+
+    loadKakaoSDK();
+
+    // 세션에 유저 정보가 있으면 캘린더 페이지로 리다이렉트
     const user = sessionStorage.getItem('user');
     if (user) {
       navigate('/calendar');
     }
-  }, [navigate]);
+  }, [kakaoKey, navigate]);
+  
 
   // 사용자 정보 저장 함수
   const saveUserInfo = async (userData) => {
@@ -188,34 +164,45 @@ const LoginPage = ({ kakaoClientId }) => {
   
 
   return (
-    <div className="login-container">
-      <h1>TODO-LIST</h1>
-      <h2>LOGIN</h2>
+    <div className='login-container'>
+      <div className='img-container-left'>
+        <img src={heartwingGif} alt="heartwing" className="heartwing-gif" />
+      </div>
+      <div className="login-content">
+        <h1>TODO-LIST</h1>
+        <h2>LOGIN</h2>
+          <GoogleLogin
+            onSuccess={handleGoogleLoginSuccess}
 
-      <GoogleLogin
-        onSuccess={handleGoogleLoginSuccess}
-        onError={() => alert('Google 로그인에 실패했습니다. 다시 시도해주세요.')}
-        theme="outline"
-      />
-
-      <button className="kakao-login-button" onClick={handleKakaoLoginSuccess}>
-        <img src={kakaoLogo} alt="Kakao Login" width="140px" />
-      </button>
-
-      {isNicknameModalOpen && (
-        <div className="nickname-modal">
-          <h3>닉네임을 입력해주세요</h3>
-          <input 
-            type="text" 
-            value={nickname} 
-            onChange={handleNicknameChange} 
-            placeholder="닉네임 입력"
+            onError={() => alert('Google 로그인에 실패했습니다. 다시 시도해주세요.')}
+            theme="outline"
           />
-          <button onClick={handleNicknameSubmit}>회원가입</button>
-          <button className="cancel" onClick={() => setNicknameModalOpen(false)}>취소</button>
+
+          <button className="kakao-login-button" onClick={handleKakaoLoginSuccess}>
+            <img src={kakaoLogo} alt="Kakao Login" width="140px" />
+          </button>
+
+          {isNicknameModalOpen && (
+            <div className="nickname-modal">
+              <h3>닉네임을 입력해주세요</h3>
+              <input 
+                type="text" 
+                value={nickname} 
+                onChange={handleNicknameChange} 
+                placeholder="닉네임 입력"
+              />
+              <button onClick={handleNicknameSubmit}>회원가입</button>
+              <button className="cancel" onClick={() => setNicknameModalOpen(false)}>취소</button>
+            </div>
+          )}
         </div>
-      )}
+        <div className='img-container-right'>
+          <img src={smileGif} alt="smile" className="smile-gif" />
+          <img src={star3Gif} alt="star3" className="star3-gif" />
+        </div>
     </div>
+
+
   );
 };
 

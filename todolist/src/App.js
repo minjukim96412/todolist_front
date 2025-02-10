@@ -20,7 +20,7 @@ function App() {
     const fetchConfig = async () => {
       try {
         const response = await configAPI.getConfig();
-        console.log("📌 API에서 받은 설정 값:", response.data); // ✅ API 응답 확인
+        //console.log("📌 API에서 받은 설정 값:", response.data); // ✅ API 응답 확인
         
         const data = response.data;
         if (!data.GOOGLE_CLIENT_ID || !data.KAKAO_KEY) {
@@ -45,9 +45,9 @@ function App() {
   if (!clientIds.GOOGLE_CLIENT_ID || !clientIds.KAKAO_KEY) {
     return <div>Configuration is missing</div>;
   }
-  console.log("📌 App.js에서 설정된 clientIds:", clientIds);
+  //console.log("📌 App.js에서 설정된 clientIds:", clientIds);
   
-  console.log("📌 App.js에서 설정된 Kakao Key:", clientIds.KAKAO_KEY); // ✅ 확인용 로그
+  //console.log("📌 App.js에서 설정된 Kakao Key:", clientIds.KAKAO_KEY); // ✅ 확인용 로그
   
   return (
     <GoogleOAuthProvider clientId={clientIds.GOOGLE_CLIENT_ID}>

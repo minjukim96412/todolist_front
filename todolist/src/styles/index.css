@@ -68,13 +68,13 @@ li {
 }
 
 li button {
-    background-color: #f44336;
+    background-color: #A6E3E9;
     margin-left: 10px;
     font-size: 1rem;
 }
 
 li button:hover {
-    background-color: #e53935;
+    background-color: #89D4DB;
 }
 
   
